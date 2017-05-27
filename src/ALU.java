@@ -51,26 +51,28 @@ public class ALU {
 		String ret;
 		if(number.charAt(0)!='-'){
 			ret=integerToBinary(number);
+			if(number.equals("0")){
+				char[] zero=new char[length];
+				Arrays.fill(zero,'0');
+				ret=new String(zero);
+			}
+			if(ret.length()<length){
+				int bias=length-ret.length();
+				char[] zero=new char[bias];
+				Arrays.fill(zero,'0');
+				ret=new String(zero)+ret;
+			}
 		}else {
 			//number < 0
 			number=number.replace("-","");
-			String temp=sub(power2(String.valueOf(length-1)),number);
-			if(!temp.equals("00")){
+			String temp=sub(power2(String.valueOf(length)),number);
+			if(temp.equals("00")){
 				char[] overflow=new char[length];
 				Arrays.fill(overflow,'0');
 				overflow[0]='1';
 				ret=new String(overflow);
 			}else {
-				ret=integerToBinary(temp);
-				StringBuffer stringBuffer=new StringBuffer();
-				int bias=length-ret.length();
-				if(bias!=0){
-					for(int i=0;i<bias;i++){
-						stringBuffer.append('1');
-					}
-				}
-				stringBuffer.append(ret);
-				ret=new String(stringBuffer);
+				ret = integerToBinary(temp);
 			}
 		}
 		return ret;
@@ -103,9 +105,8 @@ public class ALU {
 			return new String(ret);
 		}
 
-
-		char[] srcInt=number.split(".")[0].toCharArray();
-		char[] srcDec=number.split(".")[1].toCharArray();
+		char[] srcInt=number.split("\\.")[0].toCharArray();
+		char[] srcDec=number.split("\\.")[1].toCharArray();
 		boolean sig=true;//   + -->true     - -->false;
 		//determine the signal of result
 		if(srcInt[0]=='-'){
@@ -117,7 +118,7 @@ public class ALU {
 		}
 
 		char[] srcBint=integerToBinary(new String(srcInt)).toCharArray();
-		char[] srcBdec=decimal2Binary(new String(srcDec),sLength).toCharArray();
+		char[] srcBdec=decimal2Binary(new String(srcDec),sLength+5).toCharArray();
 
         //deal with too big number
         int eMax=(1<<(eLength-1))-1;
@@ -165,13 +166,13 @@ public class ALU {
 		}
 
 		//formal
-		int cnt=0;//record the position of the first 1
-		for(int i=0;;i++){
-			cnt++;
-			if(srcBint[i]=='1'){
-				break;
-			}
-		}
+		int cnt=srcBint.length-1;
+//		for(int i=0;;i++){
+//			cnt++;
+//			if(srcBint[i]=='1'){
+//				break;
+//			}
+//		}
 		char[] srcB=(new String(srcBint)+new String(srcBdec)).toCharArray();
 		char[] eTemp=integerToBinary(String.valueOf(eMax+cnt)).toCharArray();
 		if(eTemp.length<eLength){
@@ -181,7 +182,7 @@ public class ALU {
 			System.arraycopy(eTemp,0,ret,1,eLength);
 		}
 
-		System.arraycopy(srcB,cnt,ret,2+eLength,sLength);
+		System.arraycopy(srcB,1,ret,1+eLength,sLength);
 
 
 		return new String(ret);
