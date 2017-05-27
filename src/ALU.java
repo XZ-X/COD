@@ -72,15 +72,14 @@ public class ALU {
 	 */
 	public String floatRepresentation (String number, int eLength, int sLength) {
 		char[] ret=new char[eLength+sLength+1];
+		Arrays.fill(ret,'0');
 		//deal with inf
 		if(number.equals("+Inf")){
-			Arrays.fill(ret,'0');
 			for(int i=0;i<eLength;i++){
 				ret[i+1]='1';
 			}
 			return new String(ret);
 		}else if(number.equals("-Inf")){
-			Arrays.fill(ret,'0');
 			for(int i=0;i<=eLength;i++){
 				ret[i]=1;
 			}
@@ -90,9 +89,11 @@ public class ALU {
 
 		char[] srcInt=number.split(".")[0].toCharArray();
 		char[] srcDec=number.split(".")[1].toCharArray();
+		boolean sig=true;//   + -->true     - -->false;
 		//determine the signal of result
 		if(srcInt[0]=='-'){
 			ret[0]='1';
+			sig=false;
 			srcInt=Arrays.copyOfRange(srcInt,1,srcInt.length);
 		}else {
 			ret[0]='0';
@@ -101,9 +102,72 @@ public class ALU {
 		char[] srcBint=integerToBinary(new String(srcInt)).toCharArray();
 		char[] srcBdec=decimal2Binary(new String(srcDec),sLength).toCharArray();
 
+        //deal with too big number
+        int eMax=(1<<(eLength-1))-1;
+        if(srcBint.length-1>eMax){
+            return sig?floatRepresentation("+Inf",eLength,sLength):floatRepresentation("-Inf",eLength,sLength);
+        }
+        //deal pure decimal
+        if(srcBint.length==0){
+            int cnt=0;
+			for (char aSrcBdec : srcBdec) {
+				if (aSrcBdec == 1) {
+					cnt++;
+					break;
+				}
+				cnt++;
+			}
+            if(cnt>=eMax){
+				//exp-underflow
+				char[] retDec;
+                char[] zero=new char[cnt-eMax];
+                Arrays.fill(zero,'0');
+                retDec=(new String(zero)+new String(srcBdec)).toCharArray();
+                for(int i=0;i<eLength;i++){
+                	ret[1+i]='0';
+				}
+				for(int i=0;i<sLength;i++){
+                	ret[1+eLength+i]=retDec[i];
+				}
+				return new String(ret);
+            }else {
+            	//formal
+            	char[] exp=integerToBinary(String.valueOf(eMax-cnt)).toCharArray();
+            	for(int i=0;i<exp.length;i++){
+            		ret[1+eLength-1-i]=exp[exp.length-1-i];
+				}
+				for(int i=exp.length;i<eLength;i++){
+            		ret[1+eLength-1-i]='0';
+				}
+				System.arraycopy(srcBdec,0,ret,1+eLength,sLength);
+//				for(int i=0;i<sLength;i++){
+//					ret[1+eLength+i]=srcBdec[i];
+//				}
+				return new String(ret);
+			}
+		}
+
+		//formal
+		int cnt=0;//record the position of the first 1
+		for(int i=0;;i++){
+			cnt++;
+			if(srcBint[i]=='1'){
+				break;
+			}
+		}
+		char[] srcB=(new String(srcBint)+new String(srcBdec)).toCharArray();
+		char[] eTemp=integerToBinary(String.valueOf(eMax+cnt)).toCharArray();
+		if(eTemp.length<eLength){
+			ret[1]='0';
+			System.arraycopy(eTemp, 0, ret, 2, eLength - 1);
+		}else {
+			System.arraycopy(eTemp,0,ret,1,eLength);
+		}
+
+		System.arraycopy(srcB,cnt,ret,2+eLength,sLength);
 
 
-		return null;
+		return new String(ret);
 	}
 	
 	/**
