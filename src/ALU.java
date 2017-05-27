@@ -71,7 +71,36 @@ public class ALU {
 	 * @return number的二进制表示，长度为 1+eLength+sLength。从左向右，依次为符号、指数（移码表示）、尾数（首位隐藏）
 	 */
 	public String floatRepresentation (String number, int eLength, int sLength) {
-		//TODO
+		char[] ret=new char[eLength+sLength+1];
+		//deal with inf
+		if(number.equals("+Inf")){
+			Arrays.fill(ret,'0');
+			for(int i=0;i<eLength;i++){
+				ret[i+1]='1';
+			}
+			return new String(ret);
+		}else if(number.equals("-Inf")){
+			Arrays.fill(ret,'0');
+			for(int i=0;i<=eLength;i++){
+				ret[i]=1;
+			}
+			return new String(ret);
+		}
+
+
+		char[] srcInt=number.split(".")[0].toCharArray();
+		char[] srcDec=number.split(".")[1].toCharArray();
+		//determine the signal of result
+		if(srcInt[0]=='-'){
+			ret[0]='1';
+			srcInt=Arrays.copyOfRange(srcInt,1,srcInt.length);
+		}else {
+			ret[0]='0';
+		}
+
+		char[] srcBint=integerToBinary(new String(srcInt)).toCharArray();
+		char[] srcBdec=decimal2Binary(new String(srcDec),sLength).toCharArray();
+
 
 
 		return null;
@@ -300,6 +329,7 @@ public class ALU {
 
 		//接下来每四位做加法
 //		while(length)
+		//TODO: Unfinished
 		return null;
 	}
 	
@@ -426,5 +456,282 @@ public class ALU {
 	public String floatDivision (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
 		return null;
+	}
+
+
+
+
+	//tools I write
+
+//	should not be called directly
+	private static StringBuffer cut(char[] ret){
+		for(int i=0,length=ret.length;i<length-2;i++){
+			if(ret[i]=='0'&&ret[i+1]=='0'){
+				ret[i]=(char)0;
+			}else {
+				break;
+			}
+		}
+		StringBuffer buffer=new StringBuffer();
+		for(int i=0,length=ret.length;i<length;i++){
+			if(ret[i]!=(char)0){
+				buffer.append(ret[i]);
+			}
+		}
+		return buffer;
+	}
+
+	//convert a decimal number to a Binary number
+	private static String integerToBinary(String denumber){
+		StringBuffer buffer=new StringBuffer();
+		String[] tmp;
+		while(!"0".equals(denumber)&&!"00".equals(denumber)){
+			tmp=divid2(denumber).split(":");
+			denumber=new String(cut(tmp[0].toCharArray()));
+			buffer.append(tmp[1]);
+		}
+
+		//reverse
+		char[] temp=new String(buffer).toCharArray();
+		buffer.setLength(0);
+		for(int i=temp.length-1;i>=0;i--){
+			buffer.append(temp[i]);
+		}
+		return  new String(buffer);
+	}
+
+	//convert a decimal decimal to Binary decimal
+	private static String decimal2Binary(String decimal,int length){
+		char[] ret=new char[length];
+		char[] temp;
+		Arrays.fill(ret,(char)0);
+		temp=decimal.toCharArray();
+		for(int i=0;ret[length-1]==0;i++){
+			temp=mult2(new String(temp)).toCharArray();
+			ret[i]=temp[0];
+			if(temp.length>1) {
+				temp = Arrays.copyOfRange(temp, 1, temp.length);
+			}else {
+				temp=new char[1];
+				temp[0]='0';
+			}
+		}
+		return new String(ret);
+	}
+
+	private static String power2(String n){
+		String ret="1";
+		while(!"0".equals(n)&&!"00".equals(n)){
+			ret=mult2(ret);
+			n=sub(n,"1");
+		}
+		return ret;
+	}
+
+	private static String mult2(String s1){
+		String s="0"+s1;
+		char[] num=s.toCharArray();
+		char[] carry=new char[num.length];
+		Arrays.fill(carry,'0');
+		char[] ret=Arrays.copyOf(carry,num.length);
+		int temp;
+		for(int i=num.length-1;i>0;i--){
+			temp=(num[i]-'0')<<1;
+			temp+=carry[i]-'0';
+			if(temp>9){
+				carry[i-1]='1';
+				ret[i]=(char)(temp-10+'0');
+			}else{
+				ret[i]=(char)(temp+'0');
+			}
+		}
+		ret[0]=(char)(carry[0]+((num[0]-'0')<<1));
+
+//        cut 00000abcd-->0abcd
+		StringBuffer buffer=cut(ret);
+		return new String(buffer);
+	}
+
+	private static String sub(String s1,String s2){
+		char[] num1=s1.toCharArray();
+		char[] num2=s2.toCharArray();
+		char[] temp1;
+
+		//form the correct format to add
+
+		if(num1.length>num2.length){
+			int bias=num1.length-num2.length;
+			temp1= Arrays.copyOf(num2,num2.length+bias+1);
+			//xxxxxxx1234
+			while(temp1[temp1.length-1]=='\u0000'){
+				for(int i=temp1.length-1;i>0;i--) {
+					temp1[i]=temp1[i-1];
+				}
+			}
+			//00000001234
+			for(int i=0;i<bias+1;i++){
+				temp1[i]='0';
+			}
+			//01234123512
+			num1=Arrays.copyOf(num1,num1.length+1);
+			for(int i=num1.length-1;i>0;i--){
+				num1[i]=num1[i-1];
+			}
+
+			num2=temp1;
+			num1[0]='0';
+
+		}else{
+			int bias=num2.length-num1.length;
+			temp1= Arrays.copyOf(num1,num1.length+bias+1);
+			//xxxxxxx1234
+			while(temp1[temp1.length-1]=='\u0000'){
+				for(int i=temp1.length-1;i>0;i--) {
+					temp1[i]=temp1[i-1];
+				}
+			}
+			//00000001234
+			for(int i=0;i<bias+1;i++){
+				temp1[i]='0';
+			}
+			//01234123512
+			num2=Arrays.copyOf(num2,num2.length+1);
+			for(int i=num2.length-1;i>0;i--){
+				num2[i]=num2[i-1];
+			}
+			num1=temp1;
+			num2[0]='0';
+		}
+
+		//sub
+		char temp;
+		char[] carry=new char[num1.length];
+		char[] ret=new char[num1.length];
+		Arrays.fill(carry,(char)0);
+		Arrays.fill(ret,'0');
+
+		for(int i=num1.length-1;i>0;i--){
+			temp=(char)(num1[i]-num2[i]-carry[i]+'0');
+			if(temp<'0'){
+				ret[i]=(char)(temp+10);
+				carry[i-1]=1;
+			}else{
+				ret[i]=temp;
+			}
+		}
+
+		//cut 00000abcd-->0abcd
+		StringBuffer buffer=cut(ret);
+		return new String(buffer);
+	}
+	private static String add(String s1,String s2){
+		char[] num1=s1.toCharArray();
+		char[] num2=s2.toCharArray();
+		char[] temp1;
+		if(num1.length>num2.length){
+			int bias=num1.length-num2.length;
+			temp1= Arrays.copyOf(num2,num2.length+bias+1);
+			//xxxxxxx1234
+			while(temp1[temp1.length-1]=='\u0000'){
+				for(int i=temp1.length-1;i>0;i--) {
+					temp1[i]=temp1[i-1];
+				}
+			}
+			//00000001234
+			for(int i=0;i<bias+1;i++){
+				temp1[i]='0';
+			}
+			//01234123512
+			num1=Arrays.copyOf(num1,num1.length+1);
+			for(int i=num1.length-1;i>0;i--){
+				num1[i]=num1[i-1];
+			}
+			num2=temp1;
+			num1[0]='0';
+
+		}else{
+			int bias=num2.length-num1.length;
+			temp1= Arrays.copyOf(num1,num1.length+bias+1);
+			//xxxxxxx1234
+			while(temp1[temp1.length-1]=='\u0000'){
+				for(int i=temp1.length-1;i>0;i--) {
+					temp1[i]=temp1[i-1];
+				}
+			}
+			//00000001234
+			for(int i=0;i<bias+1;i++){
+				temp1[i]='0';
+			}
+			//01234123512
+			num2=Arrays.copyOf(num2,num2.length+1);
+			for(int i=num2.length-1;i>0;i--){
+				num2[i]=num2[i-1];
+			}
+			num2[0]='0';
+			num1=temp1;
+		}
+		//add
+		char[] carry=new char[num1.length];
+		char[] ret=new char[num1.length];
+		char temp;
+		Arrays.fill(carry,'0');
+		Arrays.fill(ret,'0');
+		for(int i=num1.length-1;i>0;i--){
+			temp=(char)(carry[i]+num1[i]+num2[i]-'0'-'0');
+			if(temp>'9'){
+				ret[i]=(char)(temp-10);
+				carry[i-1]='1';
+			}else {
+				ret[i]=temp;
+			}
+		}
+		ret[0]=(char)(carry[0]+num1[0]+num2[0]-'0'-'0');
+
+		//cut 00000abcd-->0abcd
+		StringBuffer buffer=cut(ret);
+		return new String(buffer);
+	}
+
+	private static String divid2(String s){
+		char[] num=s.toCharArray();
+		char a,b;
+		int temp;
+		char[] ret=new char[num.length];
+		int rest=0;
+		boolean flag=true;//判断个位是不是已经被计算过了（比如22／2中，个位没有被计算过，但是12／2，个位被计算了）
+		Arrays.fill(ret,'0');
+		for(int i=0,len=num.length;i<len-1;i++){
+			a=num[i];
+			b=num[i+1];
+			temp=a+rest*10-0x30;
+			if(temp<2){
+				i++;
+				a-=0x30;
+				b-=0x30;
+				rest=a*10+b;
+				ret[i]=(char)(rest/2+0x30);
+				rest%=2;
+				if(i==len-1){
+					flag=false;
+				}
+			}else {
+				ret[i]=(char)((temp>>1)+'0');
+				rest=temp&1;
+			}
+		}
+		if(flag) {
+			temp = num[num.length - 1] + rest * 10 - 0x30;
+			ret[num.length - 1] = (char) ((temp >> 1) + '0');
+			rest=temp&1;
+		}
+
+		StringBuffer buffer=new StringBuffer(new String(ret));
+		buffer.append(":");
+		buffer.append(rest);
+
+
+
+
+		return new String(buffer);
 	}
 }
