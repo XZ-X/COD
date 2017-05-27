@@ -8,7 +8,7 @@ public class ALUTest {
     static wALU wALU=new wALU();
 
     public static void main(String[] args) {
-        System.out.println(alu.integerRepresentation("-128",33));
+        System.out.println(alu.integerRepresentation("-128",8));
     }
 
     //expect  actual

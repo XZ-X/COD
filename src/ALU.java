@@ -53,8 +53,8 @@ public class ALU {
 		if(a>0){
 			ret=integerToBinary(number);
 		}else {
-			int power2=power2(length);
-			ret=showBits(power2+a,length);
+			number=number.replace("-","");
+			ret=integerToBinary(sub(power2(String.valueOf(length-1)),number));
 		}
 		return ret;
 	}
