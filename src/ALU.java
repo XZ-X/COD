@@ -51,7 +51,7 @@ public class ALU {
 		int a=Integer.parseInt(number);
 		String ret;
 		if(a>0){
-			ret=showBits(a,length);
+			ret=integerToBinary(number);
 		}else {
 			int power2=power2(length);
 			ret=showBits(power2+a,length);

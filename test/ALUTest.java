@@ -4,8 +4,23 @@ import static org.junit.Assert.*;
  * Created by xuxiangzhe on 2017/5/27.
  */
 public class ALUTest {
+    static ALU alu=new ALU();
+    static wALU wALU=new wALU();
+
+    public static void main(String[] args) {
+        System.out.println(alu.integerRepresentation("-128",33));
+    }
+
+    //expect  actual
     @org.junit.Test
     public void integerRepresentation() throws Exception {
+        for(int number=-128;number<=128;number++){
+            for(int length=8;length<=64;length++){
+                System.out.println(number+"###"+length);
+                assertEquals(alu.integerRepresentation(String.valueOf(number),length),wALU.integerRepresentation(String.valueOf(number),length));
+            }
+        }
+
     }
 
     @org.junit.Test
