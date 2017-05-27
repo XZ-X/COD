@@ -52,9 +52,10 @@ public class ALU {
 		if(number.charAt(0)!='-'){
 			ret=integerToBinary(number);
 		}else {
+			//number < 0
 			number=number.replace("-","");
 			String temp=sub(power2(String.valueOf(length-1)),number);
-			if(Integer.parseInt(temp)==0){
+			if(!temp.equals("00")){
 				char[] overflow=new char[length];
 				Arrays.fill(overflow,'0');
 				overflow[0]='1';
@@ -63,7 +64,13 @@ public class ALU {
 				ret=integerToBinary(temp);
 				StringBuffer stringBuffer=new StringBuffer();
 				int bias=length-ret.length();
-				if(bias==0)
+				if(bias!=0){
+					for(int i=0;i<bias;i++){
+						stringBuffer.append('1');
+					}
+				}
+				stringBuffer.append(ret);
+				ret=new String(stringBuffer);
 			}
 		}
 		return ret;
