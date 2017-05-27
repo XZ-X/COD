@@ -48,13 +48,23 @@ public class ALU {
 	 * @return number的二进制补码表示，长度为length
 	 */
 	public String integerRepresentation (String number, int length) {
-		int a=Integer.parseInt(number);
 		String ret;
-		if(a>0){
+		if(number.charAt(0)!='-'){
 			ret=integerToBinary(number);
 		}else {
 			number=number.replace("-","");
-			ret=integerToBinary(sub(power2(String.valueOf(length-1)),number));
+			String temp=sub(power2(String.valueOf(length-1)),number);
+			if(Integer.parseInt(temp)==0){
+				char[] overflow=new char[length];
+				Arrays.fill(overflow,'0');
+				overflow[0]='1';
+				ret=new String(overflow);
+			}else {
+				ret=integerToBinary(temp);
+				StringBuffer stringBuffer=new StringBuffer();
+				int bias=length-ret.length();
+				if(bias==0)
+			}
 		}
 		return ret;
 	}
