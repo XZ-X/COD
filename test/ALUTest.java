@@ -11,7 +11,7 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-        System.out.println(alu.floatRepresentation("-1.5999999999999996",4,49));
+        System.out.println(alu.integerTrueValue("01110"));
     }
 
     //expect  actual
@@ -68,11 +68,35 @@ public class ALUTest {
 
     @org.junit.Test
     public void ieee754() throws Exception {
+        String string;
+        for(int i=0;i<10000;i++){
+            string=String.valueOf(-250000+50*i);
+            string=string+"."+"0";
+            System.out.println(string);
+            assertEquals(alu.ieee754(string,32),wALU.ieee754(string,32));
+            assertEquals(alu.ieee754(string,64),wALU.ieee754(string,64));
+        }
     }
 
     @org.junit.Test
-    public void integerTrueValue() throws Exception {
+    public void ieee7542() throws Exception {
+        String string;
+        for(int i=0;i<10000;i++){
+            string=String.valueOf(-2500+0.5D*i);
+            System.out.println(string);
+            assertEquals(alu.ieee754(string,32),qALU.ieee754(string,32));
+            assertEquals(alu.ieee754(string,64),qALU.ieee754(string,64));
+        }
     }
+    @org.junit.Test
+    public void integerTrueValue() throws Exception {
+
+    }
+
+    @org.junit.Test
+    public void integerTrueValue2() throws Exception {
+    }
+
 
     @org.junit.Test
     public void floatTrueValue() throws Exception {

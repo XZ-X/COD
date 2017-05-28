@@ -85,20 +85,21 @@ public class ALU {
 		}else {
 			ret[0]='0';
 		}
-
+        int eMax=(1<<(eLength-1))-1;
 		char[] srcBint=integerToBinary(new String(srcInt)).toCharArray();
 		char[] srcBdec=decimal2Binary(new String(srcDec),sLength+5).toCharArray();
 
         //deal with too big number
-        int eMax=(1<<(eLength-1))-1;
+
         if(srcBint.length-1>eMax){
             return sig?floatRepresentation("+Inf",eLength,sLength):floatRepresentation("-Inf",eLength,sLength);
         }
         //deal pure decimal
         if(srcBint.length==0){
+            srcBdec=decimal2Binary(new String(srcDec),eMax+3).toCharArray();
             int cnt=0;
 			for (char aSrcBdec : srcBdec) {
-				if (aSrcBdec == 1) {
+				if (aSrcBdec == '1') {
 					cnt++;
 					break;
 				}
@@ -126,7 +127,7 @@ public class ALU {
 				for(int i=exp.length;i<eLength;i++){
             		ret[1+eLength-1-i]='0';
 				}
-				System.arraycopy(srcBdec,0,ret,1+eLength,sLength);
+				System.arraycopy(srcBdec,cnt,ret,1+eLength,sLength);
 //				for(int i=0;i<sLength;i++){
 //					ret[1+eLength+i]=srcBdec[i];
 //				}
@@ -165,8 +166,13 @@ public class ALU {
 	 * @return number的IEEE 754表示，长度为length。从左向右，依次为符号、指数（移码表示）、尾数（首位隐藏）
 	 */
 	public String ieee754 (String number, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+	    String ret=null;
+	    if(length==32){
+	        ret=floatRepresentation(number,8,23);
+        }else if(length==64){
+	        ret=floatRepresentation(number,11,52);
+        }
+		return ret;
 	}
 	
 	/**
@@ -176,8 +182,30 @@ public class ALU {
 	 * @return operand的真值。若为负数；则第一位为“-”；若为正数或 0，则无符号位
 	 */
 	public String integerTrueValue (String operand) {
+        String ret;
+        String temp="0";
+        char[] src=operand.toCharArray();
+        int length=operand.length();
+        for(int i=length-1;i>=0;i--){
+            if(src[i]=='1'){
+                temp=add(temp,power2(String.valueOf(length-1-i)));
+            }
+        }
+        if(src[0]=='1'){
+            ret=sub(power2(String.valueOf(length)),temp).replaceFirst("0","");
+            ret="-"+ret;
+        }else {
+            ret=temp.replaceFirst("0","");
+        }
 
-		return null;
+        if(length==1){
+            if(src[0]=='1'){
+                ret="-1";
+            }else {
+                ret="0";
+            }
+        }
+		return ret;
 	}
 	
 	/**
