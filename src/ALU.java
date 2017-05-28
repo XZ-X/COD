@@ -196,6 +196,9 @@ public class ALU {
             ret="-"+ret;
         }else {
             ret=temp.replaceFirst("0","");
+            if(ret.length()==0){
+                ret="0";
+            }
         }
 
         if(length==1){
@@ -217,8 +220,80 @@ public class ALU {
 	 * @return operand的真值。若为负数；则第一位为“-”；若为正数或 0，则无符号位。正负无穷分别表示为“+Inf”和“-Inf”， NaN表示为“NaN”
 	 */
 	public String floatTrueValue (String operand, int eLength, int sLength) {
-		// TODO YOUR CODE HERE.
-		return null;
+		char[] src=operand.toCharArray();
+		double result=0.0D;
+		String ret;
+		char sig=src[0];
+		char[] exponent=Arrays.copyOfRange(src,1,1+eLength);
+		char[] significand=Arrays.copyOfRange(src,1+eLength,sLength+eLength+1);
+
+		//Judge for zero,inf and NaN
+		boolean eZFlag = true, eMFlag = true, sZFlag = true;
+		for (int i = 0; i < eLength; i++) {
+			if ('0' != exponent[i]) {
+				eZFlag = false;
+			}
+			if ('1' != exponent[i]) {
+				eMFlag = false;
+			}
+		}
+		for (int i = 0; i < sLength; i++) {
+			if ('0' != significand[i]) {
+				sZFlag = false;
+			}
+		}
+
+		if (eMFlag && sZFlag) {
+			ret = "Inf";
+		}
+		if (eMFlag && !sZFlag) {
+			ret = "NaN";
+		}
+
+		if (eZFlag && sZFlag) {
+			ret = "0";
+		}else if(eZFlag){
+			//deal with underflow
+			double base=Double.parseDouble(power2(sub(power2(String.valueOf(eLength-1)),"2")));
+			base=1.0D/base;
+			double offset=1.0D;
+			for(int i=0;i<sLength;i++){
+				if(significand[i]=='1'){
+					result+=offset*base;
+				}
+				base*=0.5D;
+			}
+			ret=String.valueOf(result);
+		}else {
+			//normal cases
+			double base;
+			double offset=1.0D;
+			int e=Integer.parseInt(integerTrueValue(("0"+new String(exponent))));
+			significand=("1"+new String(significand)).toCharArray();
+			e=e-(Integer.parseInt(power2(String.valueOf(eLength-1)))-1);
+			if(e==0){
+				base=1.0D;
+			}else if(e>0){
+				base=Double.parseDouble(power2(String.valueOf(e)));
+			}else {
+				base=Double.parseDouble(power2(String.valueOf(-e)));
+				base=1.0D/base;
+			}
+
+			for(int i=0;i<=sLength;i++){
+				if(significand[i]=='1'){
+					result+=offset*base;
+				}
+				base*=0.5D;
+			}
+
+			ret=String.valueOf(result);
+
+		}
+		if(sig=='1'){
+			ret="-"+ret;
+		}
+		return ret;
 	}
 	
 	/**

@@ -11,7 +11,7 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-        System.out.println(alu.integerTrueValue("01110"));
+        System.out.println(alu.floatTrueValue("01000001001101100000", 8, 11));
     }
 
     //expect  actual
@@ -90,16 +90,70 @@ public class ALUTest {
     }
     @org.junit.Test
     public void integerTrueValue() throws Exception {
+        String[] strings4={
+                 "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101","0000"
+        };
 
+        String[] strings8=new String[0x100];
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                strings8[(i<<4)+j]=strings4[i]+strings4[j];
+            }
+        }
+
+        String[] strings16=new String[0x10000];
+        for(int i=0;i<0x100;i++){
+            for(int j=0;j<0x100;j++){
+                strings16[(i<<8)+j]=strings8[i]+strings8[j];
+            }
+        }
+        String temp=null;
+//        String[] strings32=new String[0x7fffffff];
+        for(int i=0;i<0x10000;i++){
+            for(int j=0;j<0x10000;j++){
+                temp=strings16[i]+strings16[j];
+                assertEquals(alu.integerTrueValue(temp),wALU.integerTrueValue(temp));
+            }
+            System.out.println(temp);
+        }
+
+//        for(int i=0;i<0x7fffffff;i++){
+//            System.out.println(strings32[i]);
+//            assertEquals(alu.integerTrueValue(strings32[i]),wALU.integerTrueValue(strings32[i]));
+//        }
     }
 
     @org.junit.Test
     public void integerTrueValue2() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            System.out.println(strings[i]);
+            assertEquals(alu.integerTrueValue(strings[i]),qALU.integerTrueValue(strings[i]));
+        }
     }
 
 
     @org.junit.Test
     public void floatTrueValue() throws Exception {
+        long x=Double.doubleToLongBits(3.2);
+        StringBuffer buffer=new StringBuffer();
+        for(int i=0;i<64;i++){
+            if((x&(1L<<(63-i)))!=0){
+                buffer.append('1');
+            }else {
+                buffer.append('0');
+            }
+        }
+        String test=new String(buffer);
+//        System.out.println(alu.floatTrueValue(test,11,52));
+//        assertEquals(alu.floatTrueValue(test,11,52),qALU.floatTrueValue(test,11,52));
+    }
+
+    @org.junit.Test
+    public void floatTrueValue2() throws Exception {
+
     }
 
     @org.junit.Test
