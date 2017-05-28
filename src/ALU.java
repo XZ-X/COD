@@ -8,37 +8,6 @@ import java.util.Arrays;
 
 public class ALU {
 
-	private String showBits(int a,int len){
-		StringBuffer buffer=new StringBuffer();
-		int temp;
-		int mask=1<<31;
-		a<<=32-len;
-		if(a==0){
-			buffer.append("0");
-		}else {
-			while(a!=0){
-				temp=(a&mask)>>>31;
-				buffer.append(String.valueOf(temp));
-				a<<=1;
-			}
-		}
-		if(buffer.length()<len){
-			int diff=len-buffer.length();
-			for(;diff>0;diff--){
-				buffer.append("0");
-			}
-		}else if(buffer.length()>len){
-			buffer.setLength(len);
-		}
-		return buffer.toString();
-	}
-
-	private int power2(int n){
-		return n<32?1<<n:0;
-	}
-
-
-
 
 	/**
 	 * 生成十进制整数的二进制补码表示。<br/>
