@@ -1,3 +1,4 @@
+
 import java.util.Arrays;
 
 /**
@@ -469,7 +470,8 @@ public class ALU {
 			}
 			num1=(new String(sigbuffer)+operand1).toCharArray();
 			sigbuffer.setLength(0);
-		}else if (num2.length<length){
+		}
+		if (num2.length<length){
 			int bias=length-num2.length;
 			char sig=num2[0];
 			for(int i=bias;i>0;i--){
@@ -480,11 +482,39 @@ public class ALU {
 		//保存符号以备判断溢出
 		char sig1=num1[0];
 		char sig2=num2[0];
-
+		int time=length/4;
+		char[] carry=new char[time+1];
+		carry[time]=c;
 		//接下来每四位做加法
-//		while(length)
-		//TODO: Unfinished
-		return null;
+		String[] result=new String[time];
+		StringBuffer resultSrc=new StringBuffer();
+		StringBuffer buffer1=new StringBuffer();
+		StringBuffer buffer2=new StringBuffer();
+		for(int i=0;i<time;i++){
+			buffer1.setLength(0);
+			buffer2.setLength(0);
+
+			buffer1.append(num1[length-4-4*i]);
+			buffer1.append(num1[length-3-4*i]);
+			buffer1.append(num1[length-2-4*i]);
+			buffer1.append(num1[length-1-4*i]);
+			buffer2.append(num2[length-4-4*i]);
+			buffer2.append(num2[length-3-4*i]);
+			buffer2.append(num2[length-2-4*i]);
+			buffer2.append(num2[length-1-4*i]);
+
+			result[time-1-i]=claAdder(new String(buffer1),new String(buffer2),carry[time-i]);
+			carry[time-1-i]=result[time-1-i].charAt(0);
+			result[time-1-i]=result[time-1-i].substring(1);
+			resultSrc=resultSrc.insert(0,result[time-1-i]);
+		}
+		if((sig1==sig2)&&(sig1!=result[0].charAt(0))){
+			resultSrc.insert(0,'1');
+		}else {
+			resultSrc.insert(0,'0');
+		}
+
+		return new String(resultSrc);
 	}
 	
 	/**
@@ -496,8 +526,8 @@ public class ALU {
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相加结果
 	 */
 	public String integerAddition (String operand1, String operand2, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+
+		return adder(operand1,operand2,'0',length);
 	}
 	
 	/**
@@ -509,8 +539,8 @@ public class ALU {
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相减结果
 	 */
 	public String integerSubtraction (String operand1, String operand2, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+		operand2=negation(operand2);
+		return adder(operand1,operand2,'1',length);
 	}
 	
 	/**
@@ -522,8 +552,50 @@ public class ALU {
 	 * @return 长度为length+1的字符串表示的相乘结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相乘结果
 	 */
 	public String integerMultiplication (String operand1, String operand2, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+		//sig-extend
+		String num1=adder(operand1,"00",'0',length).substring(1);
+		String num2=adder(operand2,"00",'0',length).substring(1);
+		String neg_num1=adder(negation(operand1),"01",'0',length).substring(1);
+
+		char[] p=new char[length];
+		char y_1='0';
+		Arrays.fill(p,'0');
+		String py=new String(p)+num2;
+		StringBuffer temp=new StringBuffer();
+		int lastIndex=py.length()-1;
+		for(int i=0;i<length;i++){
+			temp.setLength(0);
+			temp.append(py.charAt(lastIndex));
+			temp.append(y_1);
+			switch (new String(temp)){
+				case "00": {
+					y_1='0';
+					break;
+				}
+				case "01":{
+					y_1='0';
+					py=adder(py.substring(0,length),num1,'0',length).substring(1)+py.substring(length,lastIndex+1);
+					break;
+				}
+				case "11":{
+					y_1='1';
+					break;
+				}
+				case "10":{
+					y_1='1';
+					py=adder(py.substring(0,length),neg_num1,'0',length).substring(1)+py.substring(length,lastIndex+1);
+					break;
+				}
+			}
+			py=ariRightShift(py,1);
+		}
+
+		if(py.charAt(0)==(num1.charAt(0)^num2.charAt(0)+'0')){
+			py="0"+py;
+		}else {
+			py="1"+py;
+		}
+		return py.substring(0,length+1);
 	}
 	
 	/**

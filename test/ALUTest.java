@@ -11,7 +11,8 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-        System.out.println(alu.claAdder("0000","1111",'1'));
+//        System.out.println(alu.adder("0010","1",'1',12));
+        System.out.println(alu.integerMultiplication("1101","0110",4));
     }
 
     //expect  actual
@@ -285,10 +286,57 @@ public class ALUTest {
 
     @org.junit.Test
     public void adder() throws Exception {
+        String[] strings={
+                "000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","100","1110","1","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.adder(strings[i],strings[j],'1',4),wALU.adder(strings[i],strings[j],'1',4));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.adder(strings[i],strings[j],'0',4),wALU.adder(strings[i],strings[j],'0',4));
+            }
+        }
+    }
+
+    @org.junit.Test
+    public void adder2() throws Exception {
+        String[] strings={
+                "000", "001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","110","11","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.adder(strings[i],strings[j],'1',4),qALU.adder(strings[i],strings[j],'1',4));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.adder(strings[i],strings[j],'0',4),qALU.adder(strings[i],strings[j],'0',4));
+            }
+        }
     }
 
     @org.junit.Test
     public void integerAddition() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.integerAddition(strings[i],strings[j],4),wALU.integerAddition(strings[i],strings[j],4));
+            }
+        }
+    }
+    @org.junit.Test
+    public void integerAddition2() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.integerAddition(strings[i],strings[j],4),qALU.integerAddition(strings[i],strings[j],4));
+            }
+        }
     }
 
     @org.junit.Test
