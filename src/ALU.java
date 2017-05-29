@@ -409,7 +409,7 @@ public class ALU {
 		carry[3]=(char)(g[0]|(p[0]&c));
 		carry[2]=(char)(g[1]|(p[1]&g[0])|(p[1]&p[0]&c));
 		carry[1]=(char)(g[2]|(p[2]&g[1])|(p[2]&p[1]&g[0])|(p[2]&p[1]&p[0]&c));
-		carry[0]=(char)(g[3]|(p[3]&g[3])|(p[3]&p[2]&g[1])|(p[3]&p[2]&p[1]&g[0])|(p[3]&p[2]&p[1]&p[0]&g[0]));
+		carry[0]=(char)(g[3]|(p[3]&g[2])|(p[3]&p[2]&g[1])|(p[3]&p[2]&p[1]&g[0])|(p[3]&p[2]&p[1]&p[0]&c));
 
 		ret[0]=carry[0];
 		for(int i=1;i<5;i++){

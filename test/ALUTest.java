@@ -11,7 +11,7 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-        System.out.println(alu.floatTrueValue("01000001001101100000", 8, 11));
+        System.out.println(alu.claAdder("0000","1111",'1'));
     }
 
     //expect  actual
@@ -148,40 +148,139 @@ public class ALUTest {
         }
         String test=new String(buffer);
 //        System.out.println(alu.floatTrueValue(test,11,52));
-//        assertEquals(alu.floatTrueValue(test,11,52),qALU.floatTrueValue(test,11,52));
+        assertEquals(alu.floatTrueValue(test,11,52),wALU.floatTrueValue(test,11,52));
     }
 
     @org.junit.Test
     public void floatTrueValue2() throws Exception {
-
+        long x=Double.doubleToLongBits(3.2);
+        StringBuffer buffer=new StringBuffer();
+        for(int i=0;i<64;i++){
+            if((x&(1L<<(63-i)))!=0){
+                buffer.append('1');
+            }else {
+                buffer.append('0');
+            }
+        }
+        String test=new String(buffer);
+//        System.out.println(alu.floatTrueValue(test,11,52));
+        assertEquals(alu.floatTrueValue(test,11,52),qALU.floatTrueValue(test,11,52));
     }
 
     @org.junit.Test
     public void negation() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++) {
+            assertEquals(alu.negation(strings[i]),wALU.negation(strings[i]));
+            assertEquals(alu.negation(strings[i]),qALU.negation(strings[i]));
+        }
     }
 
     @org.junit.Test
     public void leftShift() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=1;i<32;i++) {
+            assertEquals(alu.leftShift(strings[i],2*i-1),wALU.leftShift(strings[i],2*i-1));
+//            assertEquals(alu.leftShift(strings[i],2*i),qALU.leftShift(strings[i],2*i));
+        }
     }
 
     @org.junit.Test
     public void logRightShift() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=1;i<48;i++) {
+            assertEquals(alu.logRightShift(strings[i],2*i-1),wALU.logRightShift(strings[i],2*i-1));
+            assertEquals(alu.logRightShift(strings[i],2*i-1),qALU.logRightShift(strings[i],2*i-1));
+        }
     }
 
     @org.junit.Test
     public void ariRightShift() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=1;i<48;i++) {
+            assertEquals(alu.ariRightShift(strings[i],2*i-1),wALU.ariRightShift(strings[i],2*i-1));
+            assertEquals(alu.ariRightShift(strings[i],2*i-1),qALU.ariRightShift(strings[i],2*i-1));
+        }
     }
 
     @org.junit.Test
     public void fullAdder() throws Exception {
+        assertEquals(alu.fullAdder('1','1','1'),wALU.fullAdder('1','1','1'));
+        assertEquals(alu.fullAdder('1','1','0'),wALU.fullAdder('1','1','0'));
+        assertEquals(alu.fullAdder('1','0','0'),wALU.fullAdder('1','0','0'));
+        assertEquals(alu.fullAdder('0','1','0'),wALU.fullAdder('0','1','0'));
+        assertEquals(alu.fullAdder('0','1','1'),wALU.fullAdder('0','1','1'));
+        assertEquals(alu.fullAdder('0','0','1'),wALU.fullAdder('0','0','1'));
+        assertEquals(alu.fullAdder('0','0','0'),wALU.fullAdder('0','0','0'));
+        assertEquals(alu.fullAdder('1','0','1'),wALU.fullAdder('1','0','1'));
+    }
+
+    @org.junit.Test
+    public void fullAdder2() throws Exception {
+        assertEquals(alu.fullAdder('1','1','1'),qALU.fullAdder('1','1','1'));
+        assertEquals(alu.fullAdder('1','1','0'),qALU.fullAdder('1','1','0'));
+        assertEquals(alu.fullAdder('1','0','0'),qALU.fullAdder('1','0','0'));
+        assertEquals(alu.fullAdder('0','1','0'),qALU.fullAdder('0','1','0'));
+        assertEquals(alu.fullAdder('0','1','1'),qALU.fullAdder('0','1','1'));
+        assertEquals(alu.fullAdder('0','0','1'),qALU.fullAdder('0','0','1'));
+        assertEquals(alu.fullAdder('0','0','0'),qALU.fullAdder('0','0','0'));
+        assertEquals(alu.fullAdder('1','0','1'),qALU.fullAdder('1','0','1'));
     }
 
     @org.junit.Test
     public void claAdder() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.claAdder(strings[i],strings[j],'1'),wALU.claAdder(strings[i],strings[j],'1'));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.claAdder(strings[i],strings[j],'0'),wALU.claAdder(strings[i],strings[j],'0'));
+            }
+        }
     }
 
     @org.junit.Test
+    public void claAdder2() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.claAdder(strings[i],strings[j],'1'),qALU.claAdder(strings[i],strings[j],'1'));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.claAdder(strings[i],strings[j],'0'),qALU.claAdder(strings[i],strings[j],'0'));
+            }
+        }
+    }
+
+    //q pass  w fail
+    @org.junit.Test
     public void oneAdder() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            System.out.println(strings[i]);
+//            assertEquals(alu.oneAdder(strings[i]),wALU.oneAdder(strings[i]));
+            assertEquals(alu.oneAdder(strings[i]),qALU.oneAdder(strings[i]));
+        }
     }
 
     @org.junit.Test
