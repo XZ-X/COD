@@ -589,13 +589,12 @@ public class ALU {
 			}
 			py=ariRightShift(py,1);
 		}
-
-		if(py.charAt(0)==(num1.charAt(0)^num2.charAt(0)+'0')){
+		if(py.charAt(0)==((num1.charAt(0)^num2.charAt(0))+'0')){
 			py="0"+py;
 		}else {
 			py="1"+py;
 		}
-		return py.substring(0,length+1);
+		return py.charAt(0)+py.substring(length+1);
 	}
 	
 	/**
