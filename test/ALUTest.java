@@ -12,7 +12,7 @@ public class ALUTest {
 
     public static void main(String[] args) {
 //        System.out.println(alu.adder("0010","1",'1',12));
-        System.out.println(alu.integerMultiplication("1000","1",4));
+        System.out.println(alu.integerMultiplication("1000","0",8));
     }
 
     //expect  actual
@@ -191,6 +191,7 @@ public class ALUTest {
         }
     }
 
+//w pass q fail
     @org.junit.Test
     public void logRightShift() throws Exception {
         String[] strings={
@@ -203,7 +204,7 @@ public class ALUTest {
             assertEquals(alu.logRightShift(strings[i],2*i-1),qALU.logRightShift(strings[i],2*i-1));
         }
     }
-
+//w pass q fail
     @org.junit.Test
     public void ariRightShift() throws Exception {
         String[] strings={
@@ -346,14 +347,14 @@ public class ALUTest {
     @org.junit.Test
     public void integerMultiplication() throws Exception {
         String[] strings={
-                "000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","100","1110","1","1101"
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
         };
         for(int i=0;i<16;i++){
             for(int j=0;j<16;j++){
                 System.out.println(strings[i]+"##"+strings[j]);
-                assertEquals(alu.integerMultiplication(strings[i],strings[j],4),wALU.integerMultiplication(strings[i],strings[j],4));
-                System.out.println(strings[i]+"#*#"+strings[j]);
-                assertEquals(alu.integerMultiplication(strings[i],strings[j],8),wALU.integerMultiplication(strings[i],strings[j],8));
+                assertEquals(alu.integerMultiplication(strings[i],strings[j],4),qALU.integerMultiplication(strings[i],strings[j],4));
+//                System.out.println(strings[i]+"#*#"+strings[j]);
+//                assertEquals(alu.integerMultiplication(strings[i],strings[j],8),qALU.integerMultiplication(strings[i],strings[j],8));
             }
         }
     }
