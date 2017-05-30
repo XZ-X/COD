@@ -539,6 +539,8 @@ public class ALU {
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相减结果
 	 */
 	public String integerSubtraction (String operand1, String operand2, int length) {
+		operand1=adder(operand1,"00",'0',length).substring(1);
+		operand2=adder(operand2,"00",'0',length).substring(1);
 		operand2=negation(operand2);
 		return adder(operand1,operand2,'1',length);
 	}
@@ -611,8 +613,73 @@ public class ALU {
 	 * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
 	 */
 	public String integerDivision (String operand1, String operand2, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+		String num1=adder(operand1,"0",'0',2*length).substring(1);
+		String num2=adder(operand2,"0",'0',length).substring(1);
+		String num2_neg=negation(num2);
+		char of='0';
+		num2_neg=adder(num2_neg,"01",'0',length).substring(1);
+		char[] r;
+		char[] q;
+		q=num1.substring(length,2*length).toCharArray();
+		if(num1.charAt(0)==num2.charAt(0)){
+			r=adder(num1.substring(0,length),num2_neg,'0',length).substring(1).toCharArray();
+			if(r[0]==num2.charAt(0)){
+				q[length-1]='1';
+				of='1';
+			}else {
+				q[length-1]='0';
+			}
+
+		}else{
+			r=adder(num1.substring(0,length),num2,'0',length).substring(1).toCharArray();
+			if(r[0]==num2.charAt(0)){
+				q[length-1]='1';
+			}else {
+				q[length-1]='0';
+				of='1';
+			}
+		}
+		char temp;
+		for(int i=0;i<length;i++){
+			if(r[0]==num2.charAt(0)){
+				temp=q[0];
+				q=leftShift(new String(q),1).toCharArray();
+				q[length-1]='1';
+				r=leftShift(new String(r),1).toCharArray();
+				r[length-1]=temp;
+				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
+			}else {
+				temp=q[0];
+				q=leftShift(new String(q),1).toCharArray();
+				q[length-1]='0';
+				r=leftShift(new String(r),1).toCharArray();
+				r[length-1]=temp;
+				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
+			}
+		}
+
+		//deal with q
+		if(r[0]==num2.charAt(0)){
+			q=leftShift(new String(q),1).toCharArray();
+			q[length-1]='1';
+		}else {
+			q=leftShift(new String(q),1).toCharArray();
+			q[length-1]='0';
+		}
+		if(num1.charAt(0)!=num2.charAt(0)){
+			q=adder(new String(q),"01",'0',length).substring(1).toCharArray();
+		}
+
+		//deal with r
+		if(r[0]!=num1.charAt(0)){
+			if(num1.charAt(0)==num2.charAt(0)){
+				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
+			}else {
+				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
+			}
+		}
+
+		return of+new String(q)+new String(r);
 	}
 	
 	/**

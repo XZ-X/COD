@@ -11,8 +11,8 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-//        System.out.println(alu.adder("0010","1",'1',12));
-        System.out.println(alu.integerMultiplication("1000","0",8));
+//        System.out.println(alu.integerSubtraction("0000","1000",8));
+        System.out.println(alu.integerDivision("0000","0001",4));
     }
 
     //expect  actual
@@ -101,22 +101,24 @@ public class ALUTest {
                 strings8[(i<<4)+j]=strings4[i]+strings4[j];
             }
         }
-
+        String temp=null;
         String[] strings16=new String[0x10000];
         for(int i=0;i<0x100;i++){
             for(int j=0;j<0x100;j++){
-                strings16[(i<<8)+j]=strings8[i]+strings8[j];
-            }
-        }
-        String temp=null;
-//        String[] strings32=new String[0x7fffffff];
-        for(int i=0;i<0x10000;i++){
-            for(int j=0;j<0x10000;j++){
-                temp=strings16[i]+strings16[j];
+//                strings16[(i<<8)+j]=strings8[i]+strings8[j];
+                temp=strings8[i]+strings8[j];
                 assertEquals(alu.integerTrueValue(temp),wALU.integerTrueValue(temp));
             }
-            System.out.println(temp);
         }
+//        String temp=null;
+//        String[] strings32=new String[0x7fffffff];
+//        for(int i=0;i<0x10000;i++){
+//            for(int j=0;j<0x10000;j++){
+//                temp=strings16[i]+strings16[j];
+//
+//            }
+//            System.out.println(temp);
+//        }
 
 //        for(int i=0;i<0x7fffffff;i++){
 //            System.out.println(strings32[i]);
@@ -138,18 +140,20 @@ public class ALUTest {
 
     @org.junit.Test
     public void floatTrueValue() throws Exception {
-        long x=Double.doubleToLongBits(3.2);
-        StringBuffer buffer=new StringBuffer();
-        for(int i=0;i<64;i++){
-            if((x&(1L<<(63-i)))!=0){
-                buffer.append('1');
-            }else {
-                buffer.append('0');
+        for(int j=0;j<200000;j++) {
+            long x = Double.doubleToLongBits(0.00000000000001D*j);
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < 64; i++) {
+                if ((x & (1L << (63 - i))) != 0) {
+                    buffer.append('1');
+                } else {
+                    buffer.append('0');
+                }
             }
-        }
-        String test=new String(buffer);
+            String test = new String(buffer);
 //        System.out.println(alu.floatTrueValue(test,11,52));
-        assertEquals(alu.floatTrueValue(test,11,52),wALU.floatTrueValue(test,11,52));
+            assertEquals(alu.floatTrueValue(test, 11, 52), wALU.floatTrueValue(test, 11, 52));
+        }
     }
 
     @org.junit.Test
@@ -201,7 +205,7 @@ public class ALUTest {
         };
         for(int i=1;i<48;i++) {
             assertEquals(alu.logRightShift(strings[i],2*i-1),wALU.logRightShift(strings[i],2*i-1));
-            assertEquals(alu.logRightShift(strings[i],2*i-1),qALU.logRightShift(strings[i],2*i-1));
+//            assertEquals(alu.logRightShift(strings[i],2*i-1),qALU.logRightShift(strings[i],2*i-1));
         }
     }
 //w pass q fail
@@ -214,7 +218,7 @@ public class ALUTest {
         };
         for(int i=1;i<48;i++) {
             assertEquals(alu.ariRightShift(strings[i],2*i-1),wALU.ariRightShift(strings[i],2*i-1));
-            assertEquals(alu.ariRightShift(strings[i],2*i-1),qALU.ariRightShift(strings[i],2*i-1));
+//            assertEquals(alu.ariRightShift(strings[i],2*i-1),qALU.ariRightShift(strings[i],2*i-1));
         }
     }
 
@@ -288,7 +292,7 @@ public class ALUTest {
     @org.junit.Test
     public void adder() throws Exception {
         String[] strings={
-                "000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","100","1110","1","1101"
+                "00", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","100","10","1","1101"
         };
         for(int i=0;i<16;i++){
             for(int j=0;j<16;j++){
@@ -342,6 +346,17 @@ public class ALUTest {
 
     @org.junit.Test
     public void integerSubtraction() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+//                System.out.println(strings[i]+"##"+strings[j]);
+//                assertEquals(alu.integerSubtraction(strings[i],strings[j],4),wALU.integerSubtraction(strings[i],strings[j],4));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.integerSubtraction(strings[i],strings[j],8),qALU.integerSubtraction(strings[i],strings[j],8));
+            }
+        }
     }
 
     @org.junit.Test
@@ -353,14 +368,28 @@ public class ALUTest {
             for(int j=0;j<16;j++){
                 System.out.println(strings[i]+"##"+strings[j]);
                 assertEquals(alu.integerMultiplication(strings[i],strings[j],4),qALU.integerMultiplication(strings[i],strings[j],4));
-//                System.out.println(strings[i]+"#*#"+strings[j]);
-//                assertEquals(alu.integerMultiplication(strings[i],strings[j],8),qALU.integerMultiplication(strings[i],strings[j],8));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.integerMultiplication(strings[i],strings[j],8),qALU.integerMultiplication(strings[i],strings[j],8));
             }
         }
     }
 
     @org.junit.Test
     public void integerDivision() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=0;i<16;i++){
+            for(int j=0;j<16;j++){
+                if(strings[j].equals("0000")){
+                    continue;
+                }
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.integerDivision(strings[i],strings[j],4),wALU.integerDivision(strings[i],strings[j],4));
+                System.out.println(strings[i]+"#*#"+strings[j]);
+                assertEquals(alu.integerDivision(strings[i],strings[j],8),wALU.integerDivision(strings[i],strings[j],8));
+            }
+        }
     }
 
     @org.junit.Test

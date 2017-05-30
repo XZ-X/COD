@@ -1,6 +1,4 @@
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
-
-import sun.net.www.content.audio.x_aiff;
+import java.util.ArrayList;
 
 /**
  * 模拟ALU进行整数和浮点数的四则运算
@@ -23,7 +21,7 @@ public class wALU {
 		StringBuffer sb2 = new StringBuffer();
 		int lengthOfInteger = 32;
 		long mod = (long)Math.pow(2.0, lengthOfInteger);
-		
+
 		long value = Long.parseLong(number);
 		//获取32位的二进制数
 		if (value < 0) {
@@ -63,7 +61,7 @@ public class wALU {
 		String ret = sb2.toString();
 		return ret;
 	}
-	
+
 	/**
 	 * 生成十进制浮点数的二进制表示。
 	 * 需要考虑 0、反规格化、正负无穷（“+Inf”和“-Inf”）、 NaN等因素，具体借鉴 IEEE 754。
@@ -172,7 +170,7 @@ public class wALU {
 			}else{
 				//小于1大于0的时候右移
 				int count = 0;//count记录需要右移的位数
-loop:			for(int i = 0;i < sLength;i++){
+				loop:			for(int i = 0;i < sLength;i++){
 					while(decimalsPart >= Math.pow(2.0, -1-i)){
 						count = i + 1;
 						break loop;
@@ -190,13 +188,13 @@ loop:			for(int i = 0;i < sLength;i++){
 				int currentE = (int)pianyi - count;
 				sb1.append(integerRepresentation(Integer.toString((int)currentE), eLength));//添加阶码,并且扩展成阶码长度位
 				sb1.append(decimalCollect.toString().substring(count,sLength + count));//最后要补全尾数长度
-				
+
 			}
-			
+
 		}
 		return sb1.toString();
 	}
-	
+
 	/**
 	 * 生成十进制浮点数的IEEE 754表示，要求调用{@link #floatRepresentation(String, int, int) floatRepresentation}实现。<br/>
 	 * 例：ieee754("11.375", 32)
@@ -213,7 +211,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		}
 		return output;
 	}
-	
+
 	/**
 	 * 计算二进制补码表示的整数的真值。<br/>
 	 * 例：integerTrueValue("00001001")
@@ -254,7 +252,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		}
 		return Integer.toString(sum);
 	}
-	
+
 	/**
 	 * 计算二进制原码表示的浮点数的真值。<br/>
 	 * 例：floatTrueValue("01000001001101100000", 8, 11)
@@ -265,9 +263,9 @@ loop:			for(int i = 0;i < sLength;i++){
 	 */
 	public String floatTrueValue (String operand, int eLength, int sLength) {
 		char SF = operand.charAt(0);//获取符号位
-		String e = operand.substring(1, eLength);//获取阶码
-		String s = operand.substring(eLength + 1, operand.length() - 1);//获取尾数
-		
+		String e = operand.substring(1, eLength + 1);//获取阶码
+		String s = operand.substring(eLength + 1, operand.length());//获取尾数
+
 		//先通过阶码的值判断是否是特殊情况
 		int valueOfE = 0;//阶码的真值
 		int pianyi = (int)Math.pow(2.0, eLength-1) - 1;//偏置常数为2的最高位次方减一
@@ -294,7 +292,7 @@ loop:			for(int i = 0;i < sLength;i++){
 				}
 				return Double.toString(sum);
 			}
-		}else if(valueOfE == (int)Math.pow(2.0, eLength)-1){
+		}else if(valueOfE-pianyi == (int)Math.pow(2.0, eLength)-1){
 			//正负无穷或NaN
 			if (!s.equals(allzero)) {
 				//NaN阶码全1，尾数非0
@@ -322,7 +320,7 @@ loop:			for(int i = 0;i < sLength;i++){
 			return Double.toString(sum);
 		}
 	}
-	
+
 	/**
 	 * 按位取反操作。<br/>
 	 * 例：negation("00001001")
@@ -342,7 +340,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = sb1.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 左移操作。<br/>
 	 * 例：leftShift("00001001", 2)
@@ -367,11 +365,11 @@ loop:			for(int i = 0;i < sLength;i++){
 				sb1.append(0);
 			}
 		}
-		
+
 		String output = sb1.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 逻辑右移操作。<br/>
 	 * 例：logRightShift("11110110", 2)
@@ -399,7 +397,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = sb1.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 算术右移操作。<br/>
 	 * 例：logRightShift("11110110", 2)
@@ -428,7 +426,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = sb1.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 全加器，对两位以及进位进行加法运算。<br/>
 	 * 例：fullAdder('1', '1', '0')
@@ -450,7 +448,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String result = sb1.toString();
 		return result;
 	}
-	
+
 	/**
 	 * 4位先行进位加法器。要求采用{@link #fullAdder(char, char, char) fullAdder}来实现<br/>
 	 * 例：claAdder("1001", "0001", '1')
@@ -469,19 +467,19 @@ loop:			for(int i = 0;i < sLength;i++){
 		int y2 = Integer.parseInt(String.valueOf(operand2.charAt(2)));
 		int y3 = Integer.parseInt(String.valueOf(operand2.charAt(1)));
 		int y4 = Integer.parseInt(String.valueOf(operand2.charAt(0)));
-		
+
 		//P的公式：P = X + Y，加法由或操作实现
 		int p1 = x1|y1;
 		int p2 = x2|y2;
 		int p3 = x3|y3;
 		int p4 = x4|y4;
-		
+
 		//G的公式：G = XY，乘法由与操作实现
 		int g1 = x1&y1;
 		int g2 = x2&y2;
 		int g3 = x3&y3;
 		int g4 = x4&y4;
-		
+
 		//根据公式得到c1 c2 c3 c4
 		int c0 = Integer.parseInt(String.valueOf(c));
 		//C1 = G1 + P1*C0
@@ -492,7 +490,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		int c3 = g3|(p3&g2)|(p3&p2&g1)|(p3&p2&p1&c0);
 		//C4 = G4 + P4*G3 + P4*P3*G2 + P4*P3*P2*G1 + P4*P3*P2*P1*C0
 		int c4 = g4|(p4&g3)|(p4&p3&g2)|(p4&p3&p2&g1)|(p4&p3&p2&p1&c0);
-		
+
 		//计算各位数的结果,result1234表示
 		char r1 = fullAdder(operand1.charAt(3), operand2.charAt(3), c).charAt(1);
 		char r2 = fullAdder(operand1.charAt(2), operand2.charAt(2), Integer.toString(c1).charAt(0)).charAt(1);
@@ -507,7 +505,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = sb1.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 加一器，实现操作数加1的运算。
 	 * 需要采用与门、或门、异或门等模拟，
@@ -522,16 +520,20 @@ loop:			for(int i = 0;i < sLength;i++){
 	public String oneAdder (String operand) {
 		StringBuffer sb1 = new StringBuffer();
 		StringBuffer sb2 = new StringBuffer();
+		ArrayList<Integer> storec = new ArrayList<>();
 		int value = 0;
 		int c = 1;//c表示进位,c0即1的值
+		storec.add(c);
 		int f = 0;//f表示这一位加法运算的结果
 		for(int i = operand.length()-1;i >= 0;i--){
 			value = Integer.parseInt(String.valueOf(operand.charAt(i)));
 			f = c^value;
 			c = c&value;
+			storec.add(c);
 			sb1.append(f);
 		}
-		sb1.append(c);//最后一个进位
+		int overfolw = storec.get(storec.size()-1)^storec.get(storec.size()-2);
+		sb2.append(overfolw);
 		//现在结果是倒过来的，还需要将sb1的内容全部倒置
 		String result = sb1.toString();
 		for(int i = result.length() - 1;i >= 0;i--){
@@ -540,7 +542,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = sb2.toString();
 		return output;
 	}
-	
+
 	/**
 	 * 加法器，要求调用{@link #claAdder(String, String, char)}方法实现。<br/>
 	 * 例：adder("0100", "0011", ‘0’, 8)
@@ -551,41 +553,52 @@ loop:			for(int i = 0;i < sLength;i++){
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相加结果
 	 */
 	public String adder (String operand1, String operand2, char c, int length) {
-		//先计算四位加法计算需要的次数，将操作数符号扩展，再循环相加，最后得到的最高进位就是判断是否溢出的标志
-				int times = length / 4;
-				String add1 = null;
-				String add2 = null;
-				StringBuffer sb1 = new StringBuffer();
-				StringBuffer sb2 = new StringBuffer();
-				//将被加数扩展
-				for(int i = 0;i < length - 4;i++){
-					sb1.append(operand1.charAt(0));
-				}
-				sb1.append(operand1);
-				add1 = sb1.toString();
-				//将加数扩展
-				for(int i = 0;i < length - 4;i++){
-					sb2.append(operand2.charAt(0));
-				}
-				sb2.append(operand2);
-				add2 = sb2.toString();
-				//调用四位加法，循环相加，前times-1次过程相同，最后一次不同，求得的结果4位4位倒过来输出
-				StringBuffer sb3 = new StringBuffer();//从左到有储存从低到高的运算结果,最后一次的运算结果为5位，不在这里面
-				StringBuffer sb4 = new StringBuffer();
-				for(int i = 0;i < times - 1;i++){
-					String partOfAdd1 = add1.substring(add1.length() - 4 - 4 * i,add1.length() - 4 * i);
-					String partOfAdd2 = add2.substring(add2.length() - 4 - 4 * i,add2.length() - 4 * i);
-					String sum = claAdder(partOfAdd1, partOfAdd2, c);
-					sb3.append(sum.substring(1, 5));
-					c = sum.charAt(0);
-				}
-				sb4.append(claAdder(add1.substring(0,4), add2.substring(0, 4),c));
-				for(int i = 0;i < times - 1;i++){
-					sb4.append(sb3.toString().substring(sb3.toString().length()- 4 - 4 * i, sb3.toString().length() - 4 * i));
-				}
-				return sb4.toString();
+		//先计算四位加法计算需要的次数，将操作数符号扩展，再循环相加
+		int times = length / 4;
+		String add1 = null;
+		String add2 = null;
+		StringBuffer sb1 = new StringBuffer();
+		StringBuffer sb2 = new StringBuffer();
+		//将被加数扩展
+		for(int i = 0;i < length - operand1.length();i++){
+			sb1.append(operand1.charAt(0));
+		}
+		sb1.append(operand1);
+		add1 = sb1.toString();
+		//将加数扩展
+		for(int i = 0;i < length - operand2.length();i++){
+			sb2.append(operand2.charAt(0));
+		}
+		sb2.append(operand2);
+		add2 = sb2.toString();
+		//调用四位加法，循环相加，求得的结果4位4位倒过来输出
+		StringBuffer sb3 = new StringBuffer();//从左到右储存从低到高的运算结果
+		StringBuffer sb4 = new StringBuffer();
+		ArrayList<Character> storec = new ArrayList<>();//保存每一次四位加法每次的进位信息，用于判断溢出
+		for(int i = 0;i < times ;i++){
+			String partOfAdd1 = add1.substring(add1.length() - 4 - 4 * i,add1.length() - 4 * i);
+			String partOfAdd2 = add2.substring(add2.length() - 4 - 4 * i,add2.length() - 4 * i);
+			String sum = claAdder(partOfAdd1, partOfAdd2, c);
+			sb3.append(sum.substring(1, 5));
+			c = sum.charAt(0);
+			storec.add(c);
+		}
+		ArrayList<Integer> storeCfinal = new ArrayList<>();
+		int Cfinal = Integer.parseInt(String.valueOf(storec.get(storec.size()-1)));
+		for(int i = 0;i < add1.substring(0,4).length();i++){
+			Cfinal = Cfinal&Integer.parseInt(String.valueOf(add1.substring(0, 4).charAt(3-i))) |
+					Cfinal&Integer.parseInt(String.valueOf(add2.substring(0, 4).charAt(3-i))) |
+					Integer.parseInt(String.valueOf(add1.substring(0, 4).charAt(3-i)))&Integer.parseInt(String.valueOf(add2.substring(0, 4).charAt(3-i)));
+			storeCfinal.add(Cfinal);
+		}
+		int overfolw = storeCfinal.get(storeCfinal.size()-1)^storeCfinal.get(storeCfinal.size()-2);
+		sb4.append(overfolw);
+		for(int i = 0;i < times ;i++){
+			sb4.append(sb3.toString().substring(sb3.toString().length()- 4 - 4 * i, sb3.toString().length() - 4 * i));
+		}
+		return sb4.toString();
 	}
-	
+
 	/**
 	 * 整数加法，要求调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
 	 * 例：integerAddition("0100", "0011", 8)
@@ -595,42 +608,9 @@ loop:			for(int i = 0;i < sLength;i++){
 	 * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相加结果
 	 */
 	public String integerAddition (String operand1, String operand2, int length) {
-		//先计算四位加法计算需要的次数，将操作数符号扩展，再循环相加，最后得到的最高进位就是判断是否溢出的标志
-		int times = length / 4;
-		String add1 = null;
-		String add2 = null;
-		StringBuffer sb1 = new StringBuffer();
-		StringBuffer sb2 = new StringBuffer();
-		//将被加数扩展
-		for(int i = 0;i < length - 4;i++){
-			sb1.append(operand1.charAt(0));
-		}
-		sb1.append(operand1);
-		add1 = sb1.toString();
-		//将加数扩展
-		for(int i = 0;i < length - 4;i++){
-			sb2.append(operand2.charAt(0));
-		}
-		sb2.append(operand2);
-		add2 = sb2.toString();
-		//调用四位加法，循环相加，前times-1次过程相同，最后一次不同，求得的结果4位4位倒过来输出
-		StringBuffer sb3 = new StringBuffer();//从左到有储存从低到高的运算结果,最后一次的运算结果为5位，不在这里面
-		StringBuffer sb4 = new StringBuffer();
-		char c = '0';
-		for(int i = 0;i < times - 1;i++){
-			String partOfAdd1 = add1.substring(add1.length() - 4 - 4 * i,add1.length() - 4 * i);
-			String partOfAdd2 = add2.substring(add2.length() - 4 - 4 * i,add2.length() - 4 * i);
-			String sum = claAdder(partOfAdd1, partOfAdd2, c);
-			sb3.append(sum.substring(1, 5));
-			c = sum.charAt(0);
-		}
-		sb4.append(claAdder(add1.substring(0,4), add2.substring(0, 4),c));
-		for(int i = 0;i < times - 1;i++){
-			sb4.append(sb3.toString().substring(sb3.toString().length()- 4 - 4 * i, sb3.toString().length() - 4 * i));
-		}
-		return sb4.toString();
+		return adder(operand1, operand2, '0', length);
 	}
-	
+
 	/**
 	 * 整数减法，可调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
 	 * 例：integerSubtraction("0100", "0011", 8)
@@ -642,11 +622,11 @@ loop:			for(int i = 0;i < sLength;i++){
 	public String integerSubtraction (String operand1, String operand2, int length) {
 		//减去一个数等于加上这个数的补码，先取得减数的真值，再取负，再取得二进制数，再调用加法
 		int trueValueOfOP2 = Integer.parseInt(integerTrueValue(operand2));
-		String afterChange = integerRepresentation(Integer.toString(trueValueOfOP2), 4);
-		String output = integerAddition(operand1, afterChange, length);	
+		String afterChange = integerRepresentation(Integer.toString(-trueValueOfOP2), length);
+		String output = integerAddition(operand1, afterChange, length);
 		return output;
 	}
-	
+
 	/**
 	 * 整数乘法，使用Booth算法实现，可调用{@link #adder(String, String, char, int) adder}等方法。<br/>
 	 * 例：integerMultiplication("0100", "0011", 8)
@@ -659,51 +639,53 @@ loop:			for(int i = 0;i < sLength;i++){
 		String x = operand1;//x是被乘数
 		String y = operand2;//y是乘数
 		char helper = '0';//helper代表了辅助位
-		String p = null;//p表示部分积
+		String p = "";//p表示部分积
 		for(int i = 0;i < length;i++){
 			p = p + "0";
 		}
 		//扩展x与y
+		int xToAdd = length - x.length();
 		if (x.length() < length) {
 			char SF = x.charAt(0);
-			for(int i = 0; i < length - x.length(); i++){
+			for(int i = 0; i < xToAdd; i++){
 				x = SF + x;
 			}
 		}
+		int yToAdd = length - y.length();
 		if (y.length() < length) {
 			char SF = y.charAt(0);
-			for(int i = 0; i < length - y.length(); i++){
+			for(int i = 0; i < yToAdd; i++){
 				y = SF + y;
 			}
 		}
 		//一共要进行length次的算数右移
-		char finalSF = '0';
+		char overflow = '0';
 		for(int i = 0;i < length;i++){
 			//根据00 01 10 11四个不同情况判断要进行的操作
 			if (y.charAt(y.length()-1) == '0') {
 				if (helper == '1') {
 					//01做加法
 					p = integerAddition(p, x, length).substring(1);
-					finalSF = integerAddition(p, x, length).charAt(0);
-					
+					overflow = integerAddition(p, x, length).charAt(0);
+
 				}
 			}else{
 				if (helper == '0') {
 					//10做减法
 					p = integerSubtraction(p, x, length).substring(1);
-					finalSF = integerAddition(p, x, length).charAt(0);
+					overflow = integerAddition(p, x, length).charAt(0);
 				}
 			}
-			
+
 			//算数右移
 			helper = y.charAt(length - 1);
+			y = p.charAt(p.length()-1) + y.substring(0,y.length()-1);
 			p = ariRightShift(p, 1);
-			y = ariRightShift(y, 1);
 		}
-		String output = finalSF + p + y;
+		String output = overflow + y;
 		return output;
 	}
-	
+
 	/**
 	 * 整数的不恢复余数除法，可调用{@link #adder(String, String, char, int) adder}等方法实现。<br/>
 	 * 例：integerDivision("0100", "0011", 8)
@@ -720,16 +702,16 @@ loop:			for(int i = 0;i < sLength;i++){
 		//长度扩展至length位
 		if (operand1.length() < length) {
 			for(int i = 0;i < length - operand1.length();i++){
-				x = SFofX + x; 
+				x = SFofX + x;
 			}
 		}
 		if (operand2.length() < length) {
 			for(int i = 0;i < length - operand2.length();i++){
-				y = SFofY + y; 
+				y = SFofY + y;
 			}
 		}
 		//设置余数寄存器R
-		String r = null;
+		String r = "";
 		String q = x;
 		char qn = '0';
 		for(int i = 0;i < length;i++){
@@ -747,28 +729,32 @@ loop:			for(int i = 0;i < sLength;i++){
 		}else{
 			qn = '0';
 		}
-		char overflow = qn;
+		char overflow = '0';
+		if ((SFofX==SFofY && qn=='1') || (SFofX!=SFofY && qn == '0')) {
+			overflow = '1';
+		}
 		//左移
 		r = r.substring(1) + q.substring(0, 1);
 		q = q.substring(1) + qn;
-		//进行length - 1次循环
-		for(int i = 0;i<length - 1;i++){
-			if (r.charAt(0) == SFofY) {
-				//R与Y同号，Q（n-1）置1，R（n+1）=2Rn-Y，因此先左移再调用减法
-				qn = '1';
-				r = r.substring(1) + q.substring(0, 1);
-				q = q.substring(1) + qn;
+		//进行length 次循环
+		//R与Y同号，Q（n-1）置1，R（n+1）=2Rn-Y
+		//R与Y异号，Q（n-1）置0，R（n+1）=2Rn+Y
+		for(int i = 0;i < length ;i++){
+			if (qn == '1') {
 				r = integerSubtraction(r, y, length).substring(1);
 			}else{
-				//R与Y异号，Q（n-1）置0，R（n+1）=2Rn+Y，因此先左移再调用加法
-				qn = '0';
-				r = r.substring(1) + q.substring(0, 1);
-				q = q.substring(1) + qn;
 				r = integerAddition(r, y, length).substring(1);
 			}
+			if (r.charAt(0) == SFofY) {
+				qn = '1';
+			}else{
+				qn = '0';
+			}
+			r = r.substring(1) + q.substring(0, 1);
+			q = q.substring(1) + qn;
 		}
+
 		//商的修正
-		q = q.substring(1) + qn;
 		if (SFofX == SFofY) {
 			//符号相同，此时的商是真正的商
 		}else{
@@ -785,10 +771,10 @@ loop:			for(int i = 0;i < sLength;i++){
 				r = integerSubtraction(r, y, length).substring(1);
 			}
 		}
-		String output = overflow + q + r; 
+		String output = overflow + q + r;
 		return output;
 	}
-	
+
 	/**
 	 * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
 	 * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
@@ -808,12 +794,14 @@ loop:			for(int i = 0;i < sLength;i++){
 		String y = operand2.substring(1);
 		//扩展
 		if (x.length() < length) {
-			for(int i = 0;i<length - x.length();i++){
+			int xToAdd = length - x.length();
+			for(int i = 0;i < xToAdd;i++){
 				x = "0" + x;
 			}
 		}
 		if (y.length() < length) {
-			for(int i = 0;i<length - y.length();i++){
+			int yToAdd = length - y.length();
+			for(int i = 0;i < yToAdd;i++){
 				y = "0" + y;
 			}
 		}
@@ -821,7 +809,7 @@ loop:			for(int i = 0;i < sLength;i++){
 		String output = null;
 		if ((SFofX == '0' && SFofY == '0') || (SFofX == '1' && SFofY == '1')) {
 			String sum = adder(x, y, '0', length);
-			output = SFofX + sum;
+			output = sum.substring(0, 1)+ SFofX + sum.substring(1);
 		}else{
 			String sum = adder(x, y, '0', length);
 			if (sum.charAt(0) == '1') {
@@ -829,12 +817,12 @@ loop:			for(int i = 0;i < sLength;i++){
 				String adddone = oneAdder(negation);
 				output = negation(String.valueOf(SFofX)) + adddone;
 			}else{
-				output = SFofX + sum;
+				output = sum.substring(0, 1)+ SFofX + sum.substring(1);
 			}
 		}
 		return output;
 	}
-	
+
 	/**
 	 * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
 	 * 例：floatAddition("00111111010100000", "00111111001000000", 8, 8, 8)
@@ -866,8 +854,8 @@ loop:			for(int i = 0;i < sLength;i++){
 		}else{
 			//y的阶码比x的高
 			x = logRightShift(x, Math.abs(delta));
-			eOfBoth = eOfY;	
-		}	
+			eOfBoth = eOfY;
+		}
 		String sum = signedAddition(operand1.charAt(0)+x, operand2.charAt(0)+y, sLength+gLength);
 		//判断sum是否为0
 		String allzero = null;
@@ -886,11 +874,11 @@ loop:			for(int i = 0;i < sLength;i++){
 			if (sum.charAt(1) == '1') {
 				//溢出，右归
 				eOfBoth = integerRepresentation(Integer.toString(Integer.parseInt(integerTrueValue(eOfBoth)) + 1), eLength);
-				sum = logRightShift(sum, 1);				
+				sum = logRightShift(sum, 1);
 			}else{
 				//不溢出，左归
 				int count = 0;
-countloop:			for(int i = 2;i < 2+sLength+gLength;i++){
+				countloop:			for(int i = 2;i < 2+sLength+gLength;i++){
 					if (sum.charAt(i) == '0') {
 						count++;
 					}else{
@@ -918,7 +906,7 @@ countloop:			for(int i = 2;i < 2+sLength+gLength;i++){
 		result = result + (operand1.charAt(0)^operand2.charAt(0)) + eOfBoth + sum;
 		return result;
 	}
-	
+
 	/**
 	 * 浮点数减法，可调用{@link #floatAddition(String, String, int, int, int) floatAddition}方法实现。<br/>
 	 * 例：floatSubtraction("00111111010100000", "00111111001000000", 8, 8, 8)
@@ -935,7 +923,7 @@ countloop:			for(int i = 2;i < 2+sLength+gLength;i++){
 		String output = floatAddition(operand1, operand2.substring(0, eLength+1)+addone, eLength, sLength, gLength);
 		return output;
 	}
-	
+
 	/**
 	 * 浮点数乘法，可调用{@link #integerMultiplication(String, String, int) integerMultiplication}等方法实现。<br/>
 	 * 例：floatMultiplication("00111110111000000", "00111111000000000", 8, 8)
@@ -949,7 +937,7 @@ countloop:			for(int i = 2;i < 2+sLength+gLength;i++){
 		// TODO YOUR CODE HERE.
 		return null;
 	}
-	
+
 	/**
 	 * 浮点数除法，可调用{@link #integerDivision(String, String, int) integerDivision}等方法实现。<br/>
 	 * 例：floatDivision("00111110111000000", "00111111000000000", 8, 8)
