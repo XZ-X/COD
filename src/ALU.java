@@ -70,7 +70,7 @@ public class ALU {
 			return new String(ret);
 		}else if(number.equals("-Inf")){
 			for(int i=0;i<=eLength;i++){
-				ret[i]=1;
+				ret[i]='1';
 			}
 			return new String(ret);
 		}
@@ -252,7 +252,7 @@ public class ALU {
 		}
 
 		if (eZFlag && sZFlag) {
-			ret = "0";
+			ret = "0.0";
 		}else if(eZFlag){
 			//deal with underflow
 			double base=Double.parseDouble(power2(sub(power2(String.valueOf(eLength-1)),"2")));
@@ -289,7 +289,9 @@ public class ALU {
 			}
 
 			ret=String.valueOf(result);
-
+			if(ret=="0"){
+				ret="0.0";
+			}
 		}
 		if(sig=='1'){
 			ret="-"+ret;
@@ -693,8 +695,43 @@ public class ALU {
 	 * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
 	 */
 	public String signedAddition (String operand1, String operand2, int length) {
-		// TODO YOUR CODE HERE.
-		return null;
+		char sign1=operand1.charAt(0),sign2=operand2.charAt(0);
+		StringBuffer zerobuffer1=new StringBuffer(),zeroBuffer2=new StringBuffer();
+		int bias1=length-operand1.length()+1;
+		int bias2=length-operand2.length()+1;
+		while(bias1!=0){
+			zerobuffer1.append('0');
+			bias1--;
+		}
+		while(bias2!=0){
+			zeroBuffer2.append('0');
+			bias2--;
+		}
+		char[] num1=(zerobuffer1+operand1.substring(1)).toCharArray(),num2=(zeroBuffer2+operand2.substring(1)).toCharArray();
+		char of='0';
+		String ret;
+		if(sign1==sign2){
+			ret=adder(new String(num1),new String(num2),'0',length);
+			if(ret.charAt(0)=='1'){
+				of='1';
+			}
+			ret=sign1+ret.substring(1);
+		}else {
+			num2=negation(new String(num2)).toCharArray();
+			num2=adder(new String(num2),"01",'0',length).substring(1).toCharArray();
+			ret=adder(new String(num1),new String(num2),'0',length*2);
+			if(ret.charAt(length)=='1'){
+				ret=sign2+ret.substring(length+1);
+			}else {
+				ret=ret.substring(length+1);
+				ret=negation(ret);
+				ret=adder(ret,"01",'0',length).substring(1);
+				ret=(sign1=='1')?("0"+ret):("1"+ret);
+			}
+
+		}
+
+		return of+ret;
 	}
 	
 	/**
@@ -737,7 +774,24 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相乘结果,其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
-		// TODO YOUR CODE HERE.
+		char sign1=operand1.charAt(0),sign2=operand2.charAt(0);
+		String exp1=operand1.substring(1,1+eLength);
+		String exp2=operand2.substring(1,1+eLength);
+		String sig1=getSignificand(operand1,eLength,sLength),sig2=getSignificand(operand2,eLength,sLength);
+		int emax=Integer.parseInt(power2(String.valueOf(eLength-1)))-1;
+		int exponent1=Integer.parseInt(integerTrueValue("0"+exp1))-emax;
+		int exponent2=Integer.parseInt(integerTrueValue("0"+exp2))-emax;
+		if(exponent1>exponent2){
+			int deltaE=exponent1-exponent2;
+			StringBuffer buffer=new StringBuffer(sig2);
+			for(int i=0;i<deltaE;i++){
+				buffer.insert(0,'0');
+			}
+			sig2=new String(buffer).substring(0,sLength+1);
+			int align4=((sLength+2)/4+1)*4-sLength-1;
+			String retSignificand=integerMultiplication("0"+sig1,"0"+sig2,((sLength+2)/4+1)*4).substring(1+1+align4);
+			retSignificand=retSignificand.substring(0,sLength+1);
+		}
 		return null;
 	}
 	
@@ -761,6 +815,47 @@ public class ALU {
 	//tools I write
 
 //	should not be called directly
+
+	private  String getSignificand(String src,int eLength,int sLength){
+		char sign=src.charAt(0);
+		String exponent=src.substring(1,eLength+1);
+		String signif=src.substring(eLength+1);
+		String ret;
+		if(Integer.parseInt(integerTrueValue("0"+exponent))==0){
+			ret="0"+signif;
+		}else {
+			ret="1"+signif;
+		}
+		return ret;
+	}
+	//return exponent:significand
+	private String setSignificand(String significand, int eLength,int sLength){
+		String retE;
+		String retS;
+		char[] sig=significand.toCharArray();
+		int emax=Integer.parseInt(power2(String.valueOf(eLength-1)))-1;
+		int exponent=0;
+		for(int i=0;i<sLength;i++){
+			if(sig[i]=='1'){
+				break;
+			}
+			exponent++;
+		}
+
+		if(exponent==sLength){
+			char[] zero=new char[eLength];
+			Arrays.fill(zero,'0');
+			retE=new String(zero);
+			zero=new char[sLength];
+			Arrays.fill(zero,'0');
+			retS=new String(zero);
+		}else{
+//			if()
+		}
+		return null;//retE+":"+retS;
+	}
+
+
 	private static StringBuffer cut(char[] ret){
 		for(int i=0,length=ret.length;i<length-2;i++){
 			if(ret[i]=='0'&&ret[i+1]=='0'){

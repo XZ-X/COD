@@ -199,70 +199,83 @@ public class qALU {
 	 */
 	public String floatTrueValue (String operand, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
-		String result="";      //返回的结果
-		if(operand.charAt(0)=='1')
+		String result="";                     //返回结果
+
+		if(operand.charAt(0)=='1')            //符号位
 			result="-";
-		
-			String s=operand.substring(1,eLength+1); //指数部分
-			String str=operand.substring(eLength+1);  //尾数部分
-			if(Integer.parseInt(s)==0){
-				HashSet<Character> x=new HashSet<Character>();
-				for(int i=0;i<str.length();i++)
-					x.add(str.charAt(i));
-				if(x.contains('0')&&x.size()==1){
-					return "0";
+
+		String s=operand.substring(1, 1+eLength);           //指数
+		String str=operand.substring(1+eLength);            //指数
+
+		HashSet<Character> x=new HashSet<Character>();
+		for(int i=0;i<s.length();i++){
+			x.add(s.charAt(i));
+		}
+
+		if(x.contains('0')&&x.size()==1){
+			str="0"+str;
+			int m=(int)Math.pow(2, eLength-1)-2;    //右移位数
+			double r=0;
+			for(int i=0;i<str.length();i++)
+				r+=Math.pow(2, -i+m)*Integer.parseInt(Character.toString(str.charAt(i)));
+
+			result+=String.valueOf(r);
+
+
+
+		}
+		else{
+			if(x.contains('1')&&x.size()==1){
+				HashSet<Character> x1=new HashSet<Character>();
+				for(int i=0;i<s.length();i++){
+					x1.add(s.charAt(i));
 				}
-				else{
-					double m=0;
-			        for(int i=0;i<str.length();i++){
-			        	m=m+Math.pow(2, -i-1)*Integer.parseInt(Character.toString(str.charAt(i)));
-			        }
-			        m=Math.pow(2, -Math.pow(2,eLength-1)+2)*m;
-			        return String.valueOf(m);
-				}
-			
-				
+				if(x1.contains('0')&&x1.size()==1)
+					result+="Inf";
+				else
+					result="NaN";
+
+
+
 			}
 			else{
-				
-					if(Integer.parseInt(s,2)==(int)(Math.pow(2, eLength)-1)){
-						if(Integer.parseInt(str)==0){
-							if(operand.charAt(0)=='0')
-								return "+Inf";
-							else
-								return "-Inf";
-						}
-							
-						else
-							return "NaN";
-					}
-					else
-					{
-						
-						int m=Integer.parseInt(s, 2)-(int)Math.pow(2, eLength-1)+1; //指数
-						 String a=str.substring(m);   //小数部分
-						 String b="1"+str.substring(0, m);  //整数部分
-						 
-						 double c=0;
-						 for(int i=0;i<a.length();i++){
-							 c=c+Math.pow(2, -i-1)*Integer.parseInt(Character.toString(a.charAt(i)));
-						 }
-						 for(int i=0;i<b.length();i++){
-							 c=c+Math.pow(2,b.length()-i-1)*Integer.parseInt(Character.toString(b.charAt(i)));
-						 }
-						 
-						
-						return result+String.valueOf(c);
-					}
+				double r=0;
+				str="1"+str;
+				int m=Integer.parseInt(s, 2)-(int)Math.pow(2, eLength-1)+1;
+				if(m>=0){
+					for(int i=0;i<=m;i++)
+						r+=Math.pow(2, m-i)*Integer.parseInt(Character.toString(str.charAt(i)));
+					for(int i=m+1;i<str.length();i++)
+						r+=Math.pow(2, -i+m)*Integer.parseInt(Character.toString(str.charAt(i)));
+					result+=String.valueOf(r);
+
 				}
-				
-				
-			
-				
-		
-	
-		
-		
+				else{
+					for(int i=0;i<str.length();i++)
+						r+=Math.pow(2, -i+m)*Integer.parseInt(Character.toString(str.charAt(i)));
+
+					result+=String.valueOf(r);
+
+
+				}
+
+
+
+
+			}
+
+
+
+
+
+		}
+
+
+
+
+		return result;
+
+
 	}
 	
 	/**

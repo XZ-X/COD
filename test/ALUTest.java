@@ -12,7 +12,8 @@ public class ALUTest {
 
     public static void main(String[] args) {
 //        System.out.println(alu.integerSubtraction("0000","1000",8));
-        System.out.println(alu.integerDivision("0000","0001",4));
+//        System.out.println(alu.signedAddition("0001","1000",4));
+          System.out.println(alu.floatTrueValue("000000000000000000", 4, 4));
     }
 
     //expect  actual
@@ -41,7 +42,7 @@ public class ALUTest {
     public void floatRepresentation() throws Exception {
         String string;
         for(int i=0;i<1000;i++) {
-            string=String.valueOf(-50.0+0.1D*i);
+            string=String.valueOf(-50000+0.1D*i);
             for(int elength=4;elength<20;elength++){
                 for(int slength=4;slength<50;slength++){
                     System.out.println(string+"##"+elength+"##"+slength);
@@ -150,26 +151,30 @@ public class ALUTest {
                     buffer.append('0');
                 }
             }
-            String test = new String(buffer);
+            String test = new String(buffer).substring(0,buffer.length()-1);
 //        System.out.println(alu.floatTrueValue(test,11,52));
-            assertEquals(alu.floatTrueValue(test, 11, 52), wALU.floatTrueValue(test, 11, 52));
+            System.out.println(test);
+            assertEquals(alu.floatTrueValue(test, 11, 51), wALU.floatTrueValue(test, 11, 51));
         }
     }
 
     @org.junit.Test
     public void floatTrueValue2() throws Exception {
-        long x=Double.doubleToLongBits(3.2);
-        StringBuffer buffer=new StringBuffer();
-        for(int i=0;i<64;i++){
-            if((x&(1L<<(63-i)))!=0){
-                buffer.append('1');
-            }else {
-                buffer.append('0');
+        for(int j=0;j<200000;j++) {
+            long x = Double.doubleToLongBits(0.00001D * j);
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < 64; i++) {
+                if ((x & (1L << (63 - i))) != 0) {
+                    buffer.append('1');
+                } else {
+                    buffer.append('0');
+                }
             }
+            System.out.printf("%.15f\n",Double.longBitsToDouble(x));
+            String test = new String(buffer);
+            System.out.println(test);
+            assertEquals(alu.floatTrueValue(test, 11, 52), qALU.floatTrueValue(test, 11, 52));
         }
-        String test=new String(buffer);
-//        System.out.println(alu.floatTrueValue(test,11,52));
-        assertEquals(alu.floatTrueValue(test,11,52),qALU.floatTrueValue(test,11,52));
     }
 
     @org.junit.Test
@@ -190,7 +195,7 @@ public class ALUTest {
                 "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
         };
         for(int i=1;i<32;i++) {
-            assertEquals(alu.leftShift(strings[i],2*i-1),wALU.leftShift(strings[i],2*i-1));
+            assertEquals(alu.leftShift(strings[i],i-1),wALU.leftShift(strings[i],i-1));
 //            assertEquals(alu.leftShift(strings[i],2*i),qALU.leftShift(strings[i],2*i));
         }
     }
@@ -203,9 +208,11 @@ public class ALUTest {
                 "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101",
                 "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
         };
-        for(int i=1;i<48;i++) {
-            assertEquals(alu.logRightShift(strings[i],2*i-1),wALU.logRightShift(strings[i],2*i-1));
-//            assertEquals(alu.logRightShift(strings[i],2*i-1),qALU.logRightShift(strings[i],2*i-1));
+        for(int i=1;i<16;i++) {
+            for(int j=0;j<16;j++) {
+                assertEquals(alu.logRightShift(strings[i]+strings[j], 3), wALU.logRightShift(strings[i]+strings[j], 3));
+                assertEquals(alu.logRightShift(strings[i]+strings[j], 3), qALU.logRightShift(strings[i]+strings[j], 3));
+            }
         }
     }
 //w pass q fail
@@ -217,8 +224,10 @@ public class ALUTest {
                 "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
         };
         for(int i=1;i<48;i++) {
-            assertEquals(alu.ariRightShift(strings[i],2*i-1),wALU.ariRightShift(strings[i],2*i-1));
-//            assertEquals(alu.ariRightShift(strings[i],2*i-1),qALU.ariRightShift(strings[i],2*i-1));
+            for (int j = 0; j < 16; j++) {
+                assertEquals(alu.ariRightShift(strings[i] + strings[j], 3), wALU.ariRightShift(strings[i] + strings[j], 3));
+                assertEquals(alu.ariRightShift(strings[i] + strings[j], 3), qALU.ariRightShift(strings[i] + strings[j], 3));
+            }
         }
     }
 
@@ -394,6 +403,15 @@ public class ALUTest {
 
     @org.junit.Test
     public void signedAddition() throws Exception {
+        String[] strings={
+                "0000", "0001", "0010", "0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1110","1111","1101"
+        };
+        for(int i=1;i<16;i++){
+            for(int j=1;j<16;j++){
+                System.out.println(strings[i]+"##"+strings[j]);
+                assertEquals(alu.signedAddition(strings[i],strings[j],4),qALU.signedAddition(strings[i],strings[j],4));
+            }
+        }
     }
 
     @org.junit.Test
