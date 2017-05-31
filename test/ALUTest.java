@@ -13,7 +13,8 @@ public class ALUTest {
     public static void main(String[] args) {
 //        System.out.println(alu.integerSubtraction("0000","1000",8));
 //        System.out.println(alu.signedAddition("0001","1000",4));
-          System.out.println(alu.floatTrueValue("000000000000000000", 4, 4));
+//          System.out.println(alu.floatTrueValue("0111111111111000000000000000000000000000000000000000000000000000", 11, 52));
+        System.out.println(qALU.floatTrueValue("0110000100100110110000101101010000100101011011111111110011000011", 11, 52));
     }
 
     //expect  actual
@@ -160,8 +161,11 @@ public class ALUTest {
 
     @org.junit.Test
     public void floatTrueValue2() throws Exception {
+        double temp=10000000000000000000000000000000000000000D;
+        temp=temp*temp;temp=temp*temp;
         for(int j=0;j<200000;j++) {
-            long x = Double.doubleToLongBits(0.00001D * j);
+
+            long x = Double.doubleToLongBits(temp * j);
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < 64; i++) {
                 if ((x & (1L << (63 - i))) != 0) {
@@ -170,7 +174,7 @@ public class ALUTest {
                     buffer.append('0');
                 }
             }
-            System.out.printf("%.15f\n",Double.longBitsToDouble(x));
+            System.out.printf("%f\n",Double.longBitsToDouble(x));
             String test = new String(buffer);
             System.out.println(test);
             assertEquals(alu.floatTrueValue(test, 11, 52), qALU.floatTrueValue(test, 11, 52));

@@ -227,8 +227,8 @@ public class qALU {
 		else{
 			if(x.contains('1')&&x.size()==1){
 				HashSet<Character> x1=new HashSet<Character>();
-				for(int i=0;i<s.length();i++){
-					x1.add(s.charAt(i));
+				for(int i=0;i<str.length();i++){
+					x1.add(str.charAt(i));
 				}
 				if(x1.contains('0')&&x1.size()==1)
 					result+="Inf";

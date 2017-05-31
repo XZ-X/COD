@@ -246,12 +246,9 @@ public class ALU {
 
 		if (eMFlag && sZFlag) {
 			ret = "Inf";
-		}
-		if (eMFlag && !sZFlag) {
+		}else if (eMFlag && !sZFlag) {
 			ret = "NaN";
-		}
-
-		if (eZFlag && sZFlag) {
+		}else if (eZFlag && sZFlag) {
 			ret = "0.0";
 		}else if(eZFlag){
 			//deal with underflow
