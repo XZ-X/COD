@@ -1,4 +1,5 @@
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 /**
@@ -97,7 +98,7 @@ public class ALU {
         }
         //deal pure decimal
         if(srcBint.length==0){
-            srcBdec=decimal2Binary(new String(srcDec),eMax+3).toCharArray();
+            srcBdec=decimal2Binary(new String(srcDec),sLength+4).toCharArray();
             int cnt=0;
 			for (char aSrcBdec : srcBdec) {
 				if (aSrcBdec == '1') {
@@ -284,11 +285,7 @@ public class ALU {
 				}
 				base*=0.5D;
 			}
-
 			ret=String.valueOf(result);
-			if(ret=="0"){
-				ret="0.0";
-			}
 		}
 		if(sig=='1'){
 			ret="-"+ret;

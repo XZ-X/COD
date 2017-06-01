@@ -14,7 +14,9 @@ public class ALUTest {
 //        System.out.println(alu.integerSubtraction("0000","1000",8));
 //        System.out.println(alu.signedAddition("0001","1000",4));
 //          System.out.println(alu.floatTrueValue("0111111111111000000000000000000000000000000000000000000000000000", 11, 52));
-        System.out.println(qALU.floatTrueValue("0110000100100110110000101101010000100101011011111111110011000011", 11, 52));
+//        System.out.println(qALU.floatTrueValue("0110000100100110110000101101010000100101011011111111110011000011", 11, 52));
+//        System.out.println(qALU.floatRepresentation("-1.5999999999999996", 4, 200));
+        System.out.println(alu.floatRepresentation("-0.8999999999999995", 4, 10));
     }
 
     //expect  actual
@@ -62,7 +64,7 @@ public class ALUTest {
             for(int elength=4;elength<20;elength++){
                 for(int slength=4;slength<50;slength++){
                     System.out.println(string+"##"+elength+"##"+slength);
-                    assertEquals(alu.floatRepresentation(string, elength, slength), qALU.floatRepresentation(string, elength, slength));
+                    assertEquals(alu.floatRepresentation(string, elength, slength), alu.floatRepresentation(string, elength, slength));
                 }
             }
 
