@@ -16,7 +16,10 @@ public class ALUTest {
 //          System.out.println(alu.floatTrueValue("0111111111111000000000000000000000000000000000000000000000000000", 11, 52));
 //        System.out.println(qALU.floatTrueValue("0110000100100110110000101101010000100101011011111111110011000011", 11, 52));
 //        System.out.println(qALU.floatRepresentation("-1.5999999999999996", 4, 200));
-        System.out.println(alu.floatRepresentation("-0.8999999999999995", 4, 10));
+        System.out.println(alu.floatRepresentation("-0.1999999999999993", 4, 47));
+        System.out.println(alu.floatRepresentation("-0.1999999999999993", 4, 60));
+        System.out.println(alu.floatRepresentation("0.0", 5, 4));
+
     }
 
     //expect  actual
