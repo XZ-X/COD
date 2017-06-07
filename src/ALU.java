@@ -260,7 +260,7 @@ public class ALU {
 			ret = "0.0";
 		}else if(eZFlag){
 			//deal with underflow
-			double base=Double.parseDouble(power2(sub(power2(String.valueOf(eLength-1)),"2")));
+			double base=Double.parseDouble(power2(sub(power2(String.valueOf(eLength-1)),"1")));
 			base=1.0D/base;
 			double offset=1.0D;
 			for(int i=0;i<sLength;i++){
