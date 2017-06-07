@@ -11,15 +11,22 @@ public class ALUTest {
     static qALU qALU=new qALU();
 
     public static void main(String[] args) {
-//        System.out.println(alu.integerSubtraction("0000","1000",8));
+//        System.out.println(qALU.integerMultiplication("1000","0001",4));
+//        System.out.println(qALU.integerMultiplication("0001","1000",4));
 //        System.out.println(alu.signedAddition("0001","1000",4));
 //          System.out.println(alu.floatTrueValue("0111111111111000000000000000000000000000000000000000000000000000", 11, 52));
 //        System.out.println(qALU.floatTrueValue("0110000100100110110000101101010000100101011011111111110011000011", 11, 52));
 //        System.out.println(qALU.floatRepresentation("-1.5999999999999996", 4, 200));
-        System.out.println(alu.floatRepresentation("-0.1999999999999993", 4, 47));
-        System.out.println(alu.floatRepresentation("-0.1999999999999993", 4, 60));
-        System.out.println(alu.floatRepresentation("0.0", 5, 4));
+//        System.out.println(qALU.floatRepresentation("-0.001", 4, 60));
+//        System.out.println(qALU.floatRepresentation("-256", 4, 47));
+//        System.out.println(qALU.floatRepresentation("256", 4, 46));
+//        System.out.println(alu.floatRepresentation("0.0", 5, 4));
+        System.out.println(alu.integerDivision("11111000","11111110",8));
 
+    }
+    @Test
+    public void myTest() throws Exception{
+        assertEquals("011110000",alu.floatRepresentation("-0",4,4));
     }
 
     //expect  actual
@@ -62,12 +69,12 @@ public class ALUTest {
     @org.junit.Test
     public void floatRepresentation2() throws Exception {
         String string;
-        for(int i=0;i<100;i++) {
-            string=String.valueOf(-5.0+0.1D*i);
+        for(int i=-100;i<100;i++) {
+            string=String.valueOf(0.0001D*i);
             for(int elength=4;elength<20;elength++){
-                for(int slength=4;slength<50;slength++){
+                for(int slength=4;slength<60;slength++){
                     System.out.println(string+"##"+elength+"##"+slength);
-                    assertEquals(alu.floatRepresentation(string, elength, slength), alu.floatRepresentation(string, elength, slength));
+                    assertEquals(alu.floatRepresentation(string, elength, slength), qALU.floatRepresentation(string, elength, slength));
                 }
             }
 

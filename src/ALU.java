@@ -619,6 +619,12 @@ public class ALU {
 		String num1=adder(operand1,"0",'0',2*length).substring(1);
 		String num2=adder(operand2,"0",'0',length).substring(1);
 		String num2_neg=negation(num2);
+		//fix 0/x
+		char[] zero=new char[length];
+		Arrays.fill(zero,'0');
+		if(new String(zero).equals(operand1)){
+			return "0"+new String(zero)+new String(zero);
+		}
 		char of='0';
 		num2_neg=adder(num2_neg,"01",'0',length).substring(1);
 		char[] r;

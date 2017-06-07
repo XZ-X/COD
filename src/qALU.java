@@ -92,20 +92,48 @@ public class qALU {
 
                         String result="";                    //小数部分
 
-                        while(y!=0){
-                            y=y*2;
-                            if(y>=1){
-                                y=y-1;
-                                result=result+"1";
-                            }
-                            else
-                                result=result+"0";
+                        String yy=String.valueOf(y);
+                        int[] y1=new int[yy.length()-1];
+                        y1[0]=0;
+                        for(int k=1;k<y1.length;k++){
+                            y1[k]=Integer.parseInt(Character.toString(yy.charAt(k+1)));
                         }
+
+                        HashSet<Integer> y2=new HashSet<Integer>();
+                        for(int k:y1)
+                            y2.add(k);
+                        boolean xx=((y2.contains(0))&&(y2.size()==1))||(result.length()>sLength+100);
+                        while(!xx){
+                            for(int k=1;k<y1.length;k++)
+                                y1[k]*=2;
+                            for(int k=y1.length-1;k>=1;k--){
+                                if(y1[k]>=10){
+                                    y1[k]-=10;
+                                    y1[k-1]+=1;
+                                }
+
+                            }
+                            if(y1[0]==1){
+                                y1[0]=0;
+                                result+="1";
+
+                            }
+                            else{
+                                result+="0";
+                            }
+
+                            y2=new HashSet<Integer>();
+                            for(int k:y1)
+                                y2.add(k);
+
+                            xx=((y2.contains(0))&&(y2.size()==1))||(result.length()>sLength+100);
+                        }
+
                         if(x==0){
                             for(int j=0;j<result.length();j++){
                                 if(result.charAt(j)=='1'){
                                     i=-(j+1)+(int)(Math.pow(2,eLength-1)-1);
-                                    result=result.substring(j);
+                                    result=result.substring(j+1);
                                     break;
                                 }
                             }
@@ -115,7 +143,9 @@ public class qALU {
                             result=str.substring(1)+result;
                         }
                         String m=Integer.toBinaryString(i);   //指数部分
-                        for(int j=0;j<eLength-m.length();j++)
+
+                        int bb=m.length();
+                        for(int j=0;j<eLength-bb;j++)
                             m="0"+m;
 
                         int a=result.length();
@@ -137,6 +167,10 @@ public class qALU {
 
 
     }
+
+
+
+
 
     /**
      * 生成十进制浮点数的IEEE 754表示，要求调用{@link #floatRepresentation(String, int, int) floatRepresentation}实现。<br/>
