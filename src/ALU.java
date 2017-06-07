@@ -89,7 +89,7 @@ public class ALU {
 		}
         int eMax=(1<<(eLength-1))-1;
 		char[] srcBint=integerToBinary(new String(srcInt)).toCharArray();
-		char[] srcBdec=decimal2Binary(new String(srcDec),sLength+5).toCharArray();
+		char[] srcBdec=decimal2Binary(new String(srcDec),sLength*2).toCharArray();
 
         //deal with too big number
 
@@ -99,7 +99,7 @@ public class ALU {
         boolean zf=true;
         //deal pure decimal
         if(srcBint.length==0){
-            srcBdec=decimal2Binary(new String(srcDec),sLength+5).toCharArray();
+            srcBdec=decimal2Binary(new String(srcDec),sLength*2).toCharArray();
             int cnt=0;
 			for (char aSrcBdec : srcBdec) {
 				if (aSrcBdec == '1') {
@@ -119,7 +119,7 @@ public class ALU {
 				char[] retDec;
                 char[] zero=new char[cnt-eMax];
                 Arrays.fill(zero,'0');
-                retDec=(new String(zero)+new String(srcBdec)).toCharArray();
+                retDec=(new String(zero)+new String(srcBdec).substring(cnt-1)).toCharArray();
                 for(int i=0;i<eLength;i++){
                 	ret[1+i]='0';
 				}
@@ -253,7 +253,7 @@ public class ALU {
 		}
 
 		if (eMFlag && sZFlag) {
-			ret = "Inf";
+			ret = sig=='1'?"-Inf":"+Inf";
 		}else if (eMFlag && !sZFlag) {
 			ret = "NaN";
 		}else if (eZFlag && sZFlag) {
@@ -294,8 +294,10 @@ public class ALU {
 			}
 			ret=String.valueOf(result);
 		}
-		if(sig=='1'){
+		if(sig=='1'&&!ret.equals("NaN")){
 			ret="-"+ret;
+		}else if(ret.equals("Inf")){
+			ret="+"+ret;
 		}
 		return ret;
 	}
@@ -906,8 +908,12 @@ public class ALU {
 		Arrays.fill(ret,(char)0);
 		temp=decimal.toCharArray();
 		for(int i=0;ret[length-1]==0;i++){
-			temp=mult2(new String(temp)).toCharArray();
+			temp=mult2(new String(temp),true).toCharArray();
 			ret[i]=temp[0];
+			if(temp[0]=='0'){
+				temp=Arrays.copyOfRange(temp, 1, temp.length);
+				continue;
+			}
 			if(temp.length>1) {
 				temp = Arrays.copyOfRange(temp, 1, temp.length);
 			}else {
@@ -949,6 +955,32 @@ public class ALU {
 //        cut 00000abcd-->0abcd
 		StringBuffer buffer=cut(ret);
 		return new String(buffer);
+	}
+	private static String mult2(String s1,boolean isD2B){
+		String s="0"+s1;
+		char[] num=s.toCharArray();
+		char[] carry=new char[num.length];
+		Arrays.fill(carry,'0');
+		char[] ret=Arrays.copyOf(carry,num.length);
+		int temp;
+		for(int i=num.length-1;i>0;i--){
+			temp=(num[i]-'0')<<1;
+			temp+=carry[i]-'0';
+			if(temp>9){
+				carry[i-1]='1';
+				ret[i]=(char)(temp-10+'0');
+			}else{
+				ret[i]=(char)(temp+'0');
+			}
+		}
+		ret[0]=(char)(carry[0]+((num[0]-'0')<<1));
+
+//        cut 00000abcd-->0abcd
+		if(ret[0]!='1'){
+			return "0"+new String(ret).substring(1);
+		}else {
+			return "1"+new String(ret).substring(1);
+		}
 	}
 
 	private static String sub(String s1,String s2){
