@@ -775,19 +775,19 @@ public class ALU {
 		char of='0';
 		String ret;
 		if(sign1==sign2){
-			ret=adder(new String(num1),new String(num2),'0',length);
-			if(ret.charAt(0)=='1'){
+			ret=adder("0"+new String(num1),"0"+new String(num2),'0',2*length).substring(1);
+			if(ret.charAt(length-1)=='1'){
 				of='1';
 			}
-			ret=sign1+ret.substring(1);
+			ret=sign1+ret.substring(length);
 		}else {
 			num2=negation(new String(num2)).toCharArray();
-			num2=adder(new String(num2),"01",'0',length).substring(1).toCharArray();
-			ret=adder(new String(num1),new String(num2),'0',length*2);
-			if(ret.charAt(length)=='1'){
-				ret=sign2+ret.substring(length+1);
+//			num2=adder(new String(num2),"01",'0',length).substring(1).toCharArray();
+			ret=adder("0"+new String(num1),"0"+new String(num2),'1',length*2).substring(1);
+			if(ret.charAt(length-1)=='1'){
+				ret=sign1+ret.substring(length);
 			}else {
-				ret=ret.substring(length+1);
+				ret=ret.substring(length);
 				ret=negation(ret);
 				ret=adder(ret,"01",'0',length).substring(1);
 				ret=(sign1=='1')?("0"+ret):("1"+ret);
