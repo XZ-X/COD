@@ -1,4 +1,5 @@
 
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -809,8 +810,75 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相加结果，其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
-		// TODO YOUR CODE HERE.
-		return null;
+		int e1=Integer.parseInt(integerTrueValue(operand1.substring(1,1+eLength))),e2=Integer.parseInt(integerTrueValue(operand2.substring(1,1+eLength)));
+		String s1="1"+operand1.substring(1+eLength),s2="1"+operand2.substring(1+eLength);
+		if(e1==0){
+			s1=s1.replaceAll("1","0");
+		}else if(e2==0){
+			s2=s2.replaceAll("1","0");
+		}
+		StringBuffer ret=new StringBuffer();
+		char[] zeros=new char[gLength];
+		Arrays.fill(zeros,'0');
+		String guard=new String(zeros);
+		if(e1>=e2){
+			int deltaE=e1-e2;
+			s2=logRightShift(s2+guard,deltaE);
+			int biasTo4=((sLength+5)/4+1)*4-sLength+5;
+			s1+=guard;
+			String result=signedAddition(operand1.charAt(0)+s1,operand2.charAt(0)+s2,sLength+5+biasTo4).substring(1);
+			ret.append(result.charAt(0));
+			result=result.substring(biasTo4);//刚好比原来多出来一位，用来看一看有没有进位
+
+			int cnt=0,len=result.length();
+			for(;cnt<len;cnt++){
+				if(result.charAt(cnt)=='1'){
+					break;
+				}
+			}
+			e1=e1-(cnt-1);
+			if(e1>=(1<<(eLength-1))){
+				//overflow
+				char[] one=new char[eLength];
+				Arrays.fill(one,'1');
+				ret.append(new String(one));
+				ret.insert(0,'1');
+				char[] zero=new char[sLength];
+				Arrays.fill(zero,'0');
+				ret.append(zero);
+				return new String(ret);
+			}else if(e1<0) {
+				//underflow
+				char[] zero=new char[eLength];
+				Arrays.fill(zero,'0');
+				ret.append(zero);
+				ret.insert(0,'0');
+				for(int i=e1+1;i<0&&i<=sLength;i++){
+					ret.append('0');
+				}
+				ret.append(result.substring(cnt));
+				char[] zeroooo=new char[sLength];
+				Arrays.fill(zeroooo,'0');
+				ret.append(zeroooo);
+				ret.setLength(2+eLength+sLength);
+				return new String(ret);
+			}else{
+				//normal
+				ret.insert(0,'0');
+				ret.append(integerRepresentation(String.valueOf(e1),eLength/4*4+4).substring(eLength/4*4+4-eLength));
+				ret.append(result.substring(cnt+1));
+				char[] zeroooo=new char[sLength];
+				Arrays.fill(zeroooo,'0');
+				ret.append(zeroooo);
+				ret.setLength(2+eLength+sLength);
+				return new String(ret);
+			}
+		}else{
+			//真相是我懒得再重写一遍了
+			return floatAddition(operand2,operand1,eLength,sLength,gLength);
+		}
+
+
 	}
 	
 	/**
