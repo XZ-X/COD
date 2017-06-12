@@ -14,9 +14,9 @@ import org.junit.runners.Parameterized.Parameters;
 public class OneAdderTest {
 
 //	@Rule
-	public TestLogger tl = new TestLogger();
-//
-//	@Rule
+//	public TestLogger tl = new TestLogger();
+
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 	
 	@Parameters

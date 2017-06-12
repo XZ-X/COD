@@ -14,9 +14,9 @@ import org.junit.runners.Parameterized.Parameters;
 public class IntegerDivisionTest {
 
 //	@Rule
-	public TestLogger tl = new TestLogger();
+//	public TestLogger tl = new TestLogger();
 
-//	@Rule
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
 	@Parameters
@@ -27,7 +27,7 @@ public class IntegerDivisionTest {
         		{"0111", "0011", 4, "000100001"},
         		{"0111", "1101", 4, "011100001"},
         		{"0110", "1101", 4, "011100000"},
-        		{"1010", "0011", 4, "011111101"},
+        		{"1010", "0011", 4, "011100000"},
         });
     }
 

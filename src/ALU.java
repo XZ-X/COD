@@ -617,82 +617,137 @@ public class ALU {
 	 * @param length 存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度，当某个操作数的长度小于length时，需要在高位补符号位
 	 * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
 	 */
+
 	public String integerDivision (String operand1, String operand2, int length) {
-		String num1=adder(operand1,"0",'0',2*length).substring(1);
+		//不恢复余数的算法有bug，所以我写个恢复余数的吧。。。。。
+		String RQ=adder(operand1,"0",'0',2*length).substring(1);
 		String num2=adder(operand2,"0",'0',length).substring(1);
 		String num2_neg=negation(num2);
-		//fix 0/x
-		char[] zero=new char[length];
-		Arrays.fill(zero,'0');
-		if(new String(zero).equals(operand1)){
-			return "0"+new String(zero)+new String(zero);
-		}
-		char of='0';
 		num2_neg=adder(num2_neg,"01",'0',length).substring(1);
-		char[] r;
-		char[] q;
-		q=num1.substring(length,2*length).toCharArray();
-		if(num1.charAt(0)==num2.charAt(0)){
-			r=adder(num1.substring(0,length),num2_neg,'0',length).substring(1).toCharArray();
-			if(r[0]==num2.charAt(0)){
-				q[length-1]='1';
-				of='1';
-			}else {
-				q[length-1]='0';
+		char sigRQ=RQ.charAt(0),sig2=num2.charAt(0);
+		char[] zeros=new char[length];
+		Arrays.fill(zeros,'0');
+		String zero=new String(zeros);
+		if(num2.equals(zero)){
+			return  "NaN";
+		}
+		boolean isAdd;
+		for(int i=0;i<length;i++) {
+			isAdd=false;
+			RQ = leftShift(RQ, 1);
+			if (sigRQ != sig2) {
+				isAdd = true;
+				RQ = adder(RQ.substring(0, length), num2, '0', length).substring(1) + RQ.substring(length, 2 * length);
+			} else {
+				RQ = adder(RQ.substring(0, length), num2_neg, '0', length).substring(1) + RQ.substring(length, length * 2);
 			}
-
+			if (RQ.substring(0, length ).equals(zero) || RQ.charAt(0) == sigRQ) {
+				sigRQ = RQ.charAt(0);
+				RQ = RQ.substring(0, length * 2 - 1) + "1";
+			} else {
+				RQ = RQ.substring(0, length * 2 - 1) + "0";
+				if (isAdd) {
+					RQ = adder(RQ.substring(0, length), num2_neg, '0', length).substring(1) + RQ.substring(length, length * 2);
+				} else {
+					RQ = adder(RQ.substring(0, length), num2, '0', length).substring(1) + RQ.substring(length, 2 * length);
+				}
+				sigRQ = RQ.charAt(0);
+			}
+		}
+		if(operand1.charAt(0)!=sig2){
+			RQ=RQ.substring(0,length)+adder(negation(RQ.substring(length,2*length)),"01",'0',length).substring(1);
+		}
+		char[] of=new char[length];
+		Arrays.fill(of,'0');
+		of[0]=1;
+		String overflow=new String(of);
+		Arrays.fill(of,'1');
+		String neg_1=new String(of);
+		if((operand1.equals(overflow)&&operand2.equals(neg_1))||(operand2.equals(overflow)&&operand1.equals(neg_1))){
+			RQ="1"+RQ.substring(length)+RQ.substring(0,length);
 		}else{
-			r=adder(num1.substring(0,length),num2,'0',length).substring(1).toCharArray();
-			if(r[0]==num2.charAt(0)){
-				q[length-1]='1';
-			}else {
-				q[length-1]='0';
-				of='1';
-			}
-		}
-		char temp;
-		for(int i=0;i<length;i++){
-			if(r[0]==num2.charAt(0)){
-				temp=q[0];
-				q=leftShift(new String(q),1).toCharArray();
-				q[length-1]='1';
-				r=leftShift(new String(r),1).toCharArray();
-				r[length-1]=temp;
-				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
-			}else {
-				temp=q[0];
-				q=leftShift(new String(q),1).toCharArray();
-				q[length-1]='0';
-				r=leftShift(new String(r),1).toCharArray();
-				r[length-1]=temp;
-				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
-			}
+			RQ="0"+RQ.substring(length)+RQ.substring(0,length);
 		}
 
-		//deal with q
-		if(r[0]==num2.charAt(0)){
-			q=leftShift(new String(q),1).toCharArray();
-			q[length-1]='1';
-		}else {
-			q=leftShift(new String(q),1).toCharArray();
-			q[length-1]='0';
-		}
-		if(num1.charAt(0)!=num2.charAt(0)){
-			q=adder(new String(q),"01",'0',length).substring(1).toCharArray();
-		}
-
-		//deal with r
-		if(r[0]!=num1.charAt(0)){
-			if(num1.charAt(0)==num2.charAt(0)){
-				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
-			}else {
-				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
-			}
-		}
-
-		return of+new String(q)+new String(r);
+		return RQ;
 	}
-	
+//	public String integerDivision (String operand1, String operand2, int length) {
+//		String num1=adder(operand1,"0",'0',2*length).substring(1);
+//		String num2=adder(operand2,"0",'0',length).substring(1);
+//		String num2_neg=negation(num2);
+//		num2_neg=adder(num2_neg,"01",'0',length).substring(1);
+//		//fix 0/x
+//		char[] zero=new char[length];
+//		Arrays.fill(zero,'0');
+//		if(new String(zero).equals(operand1)){
+//			return "0"+new String(zero)+new String(zero);
+//		}
+//		char of='0';
+//
+//		char[] r;
+//		char[] q;
+//		q=num1.substring(length,2*length).toCharArray();
+//		if(num1.charAt(0)==num2.charAt(0)){
+//			r=adder(num1.substring(0,length),num2_neg,'0',length).substring(1).toCharArray();
+//			if(r[0]==num2.charAt(0)){
+//				q[length-1]='1';
+//				of='1';
+//			}else {
+//				q[length-1]='0';
+//			}
+//
+//		}else{
+//			r=adder(num1.substring(0,length),num2,'0',length).substring(1).toCharArray();
+//			if(r[0]==num2.charAt(0)){
+//				q[length-1]='1';
+//			}else {
+//				q[length-1]='0';
+//				of='1';
+//			}
+//		}
+//		char temp;
+//		for(int i=0;i<length;i++){
+//			if(r[0]==num2.charAt(0)){
+//				temp=q[0];
+//				q=leftShift(new String(q),1).toCharArray();
+//				q[length-1]='1';
+//				r=leftShift(new String(r),1).toCharArray();
+//				r[length-1]=temp;
+//				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
+//			}else {
+//				temp=q[0];
+//				q=leftShift(new String(q),1).toCharArray();
+//				q[length-1]='0';
+//				r=leftShift(new String(r),1).toCharArray();
+//				r[length-1]=temp;
+//				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
+//			}
+//		}
+//
+//		//deal with q
+//		if(r[0]==num2.charAt(0)){
+//			q=leftShift(new String(q),1).toCharArray();
+//			q[length-1]='1';
+//		}else {
+//			q=leftShift(new String(q),1).toCharArray();
+//			q[length-1]='0';
+//		}
+//		if(num1.charAt(0)!=num2.charAt(0)){
+//			q=adder(new String(q),"01",'0',length).substring(1).toCharArray();
+//		}
+//
+//		//deal with r
+//		if(r[0]!=num1.charAt(0)){
+//			if(num1.charAt(0)==num2.charAt(0)){
+//				r=adder(new String(r),num2,'0',length).substring(1).toCharArray();
+//			}else {
+//				r=adder(new String(r),num2_neg,'0',length).substring(1).toCharArray();
+//			}
+//		}
+//
+//		return of+new String(q)+new String(r);
+//	}
+
 	/**
 	 * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
 	 * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、

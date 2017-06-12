@@ -13,17 +13,15 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class Ieee754Test {
 
-//	@Rule
-	public TestLogger tl = new TestLogger();
 
-//	@Rule
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
         		{"-Inf", 64, "1111111111110000000000000000000000000000000000000000000000000000"},
-        		{"0", 32, "00000000000000000000000000000000"},
+        		{"0.0", 32, "00000000000000000000000000000000"},
         		{"11.375", 32, "01000001001101100000000000000000"}
         });
     }

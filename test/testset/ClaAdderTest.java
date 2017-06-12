@@ -13,10 +13,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ClaAdderTest {
 
-//	@Rule
-	public TestLogger tl = new TestLogger();
 
-//	@Rule
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
 	@Parameters

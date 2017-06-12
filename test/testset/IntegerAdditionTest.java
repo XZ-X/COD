@@ -14,9 +14,9 @@ import org.junit.runners.Parameterized.Parameters;
 public class IntegerAdditionTest {
 
 //	@Rule
-	public TestLogger tl = new TestLogger();
+//	public TestLogger tl = new TestLogger();
 
-//	@Rule
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
 	@Parameters

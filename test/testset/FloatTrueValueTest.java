@@ -13,10 +13,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class FloatTrueValueTest {
 
-//	@Rule
-	public TestLogger tl = new TestLogger();
-
-//	@Rule
+	@Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
 	@Parameters
@@ -24,7 +21,7 @@ public class FloatTrueValueTest {
         return Arrays.asList(new Object[][] {
         		{"011110000", 4, 4, "+Inf"},
         		{"111110010", 4, 4, "NaN"},
-        		{"000000000", 4, 4, "0"},
+        		{"000000000", 4, 4, "0.0"},
         		{"101100000", 4, 4, "-0.5"},
         		{"00111111100000000000", 8, 11, "1.0"},
         		{"1000001110010", 4, 8, "-0.0069580078125"},
