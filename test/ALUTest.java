@@ -21,7 +21,8 @@ public class ALUTest {
 //        System.out.println(qALU.floatRepresentation("-256", 4, 47));
 //        System.out.println(qALU.floatRepresentation("256", 4, 46));
 //        System.out.println(alu.floatRepresentation("0.0", 5, 4));
-        System.out.println(alu.integerRepresentation("8",4));
+        System.out.println(alu.floatAddition("00111111010100000", "00111111001000000", 8, 8, 4));
+        System.out.println("000111111101110000");
 
     }
     @Test

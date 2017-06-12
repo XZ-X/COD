@@ -824,11 +824,11 @@ public class ALU {
 		if(e1>=e2){
 			int deltaE=e1-e2;
 			s2=logRightShift(s2+guard,deltaE);
-			int biasTo4=((sLength+5)/4+1)*4-sLength+5;
+			int biasTo4=((sLength+gLength+2)/4+1)*4-(2+sLength+gLength);//1隐藏位+1预置进位
 			s1+=guard;
-			String result=signedAddition(operand1.charAt(0)+s1,operand2.charAt(0)+s2,sLength+5+biasTo4).substring(1);
-			ret.append(result.charAt(0));
-			result=result.substring(biasTo4);//刚好比原来多出来一位，用来看一看有没有进位
+			String result=signedAddition(operand1.charAt(0)+s1,operand2.charAt(0)+s2,2+sLength+gLength+biasTo4).substring(1);
+			ret.append(result.charAt(0));//符号
+			result=result.substring(biasTo4+1);//刚好比原来多出来一位，用来看一看有没有进位
 
 			int cnt=0,len=result.length();
 			for(;cnt<len;cnt++){
@@ -837,7 +837,7 @@ public class ALU {
 				}
 			}
 			e1=e1-(cnt-1);
-			if(e1>=(1<<(eLength-1))){
+			if(e1>=(1<<(eLength))-1){
 				//overflow
 				char[] one=new char[eLength];
 				Arrays.fill(one,'1');
@@ -892,8 +892,8 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相减结果，其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatSubtraction (String operand1, String operand2, int eLength, int sLength, int gLength) {
-		// TODO YOUR CODE HERE.
-		return null;
+		operand2=(operand2.charAt(0)=='1')?"0":"1"+operand2.substring(1);
+		return floatAddition(operand1,operand2,eLength,sLength,gLength);
 	}
 	
 	/**
