@@ -100,7 +100,7 @@ public class ALU {
         boolean zf=true;
         //deal pure decimal
         if(srcBint.length==0){
-            srcBdec=decimal2Binary(new String(srcDec),sLength*2).toCharArray();
+            srcBdec=decimal2Binary(new String(srcDec),(1<<eLength-1)+sLength*2).toCharArray();
             int cnt=0;
 			for (char aSrcBdec : srcBdec) {
 				if (aSrcBdec == '1') {
@@ -906,25 +906,67 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相乘结果,其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
-		char sign1=operand1.charAt(0),sign2=operand2.charAt(0);
-		String exp1=operand1.substring(1,1+eLength);
-		String exp2=operand2.substring(1,1+eLength);
-		String sig1=getSignificand(operand1,eLength,sLength),sig2=getSignificand(operand2,eLength,sLength);
-		int emax=Integer.parseInt(power2(String.valueOf(eLength-1)))-1;
-		int exponent1=Integer.parseInt(integerTrueValue("0"+exp1))-emax;
-		int exponent2=Integer.parseInt(integerTrueValue("0"+exp2))-emax;
-		if(exponent1>exponent2){
-			int deltaE=exponent1-exponent2;
-			StringBuffer buffer=new StringBuffer(sig2);
-			for(int i=0;i<deltaE;i++){
-				buffer.insert(0,'0');
-			}
-			sig2=new String(buffer).substring(0,sLength+1);
-			int align4=((sLength+2)/4+1)*4-sLength-1;
-			String retSignificand=integerMultiplication("0"+sig1,"0"+sig2,((sLength+2)/4+1)*4).substring(1+1+align4);
-			retSignificand=retSignificand.substring(0,sLength+1);
+		int e1 = Integer.parseInt(integerTrueValue(operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue(operand2.substring(1, 1 + eLength)));
+		String s1 = "1" + operand1.substring(1 + eLength), s2 = "1" + operand2.substring(1 + eLength);
+		if (e1 == 0) {
+			s1 = s1.replaceAll("1", "0");
+		} else if (e2 == 0) {
+			s2 = s2.replaceAll("1", "0");
 		}
-		return null;
+		StringBuffer ret = new StringBuffer();
+
+		int biasTo4 = ((2 * s2.length() + 1) / 4 + 1) * 4 - (2 * s2.length() + 1);
+		String result = integerMultiplication("0" + s1, "0" + s2, 2 * s2.length() + 1 + biasTo4).substring(1);
+		result = result.substring(result.length() - 2 * s2.length(), result.length());
+		ret.append(String.valueOf(Integer.parseInt("" + operand1.charAt(0)) ^ Integer.parseInt("" + operand2.charAt(0))));//符号
+
+		//这部分我直接复制了上题
+		int cnt = 0, len = result.length();
+		for (; cnt < len; cnt++) {
+			if (result.charAt(cnt) == '1') {
+				break;
+			}
+		}
+		e1 = e1 + e2 - ((1 << (eLength-1)) - 1);
+		e1 = e1 - (cnt - 1);
+		if (e1 >= (1 << (eLength)) - 1) {
+			//overflow
+			char[] one = new char[eLength];
+			Arrays.fill(one, '1');
+			ret.append(new String(one));
+			ret.insert(0, '1');
+			char[] zero = new char[sLength];
+			Arrays.fill(zero, '0');
+			ret.append(zero);
+			return new String(ret);
+		} else if (e1 < 0) {
+			//underflow
+			char[] zero = new char[eLength];
+			Arrays.fill(zero, '0');
+			ret.append(zero);
+			ret.insert(0, '0');
+			for (int i = e1 + 1; i < 0 && i <= sLength; i++) {
+				ret.append('0');
+			}
+			ret.append(result.substring(cnt));
+			char[] zeroooo = new char[sLength];
+			Arrays.fill(zeroooo, '0');
+			ret.append(zeroooo);
+			ret.setLength(2 + eLength + sLength);
+			return new String(ret);
+		} else {
+			//normal
+			ret.insert(0, '0');
+			ret.append(integerRepresentation(String.valueOf(e1), eLength / 4 * 4 + 4).substring(eLength / 4 * 4 + 4 - eLength));
+			ret.append(result.substring(cnt + 1));
+			char[] zeroooo = new char[sLength];
+			Arrays.fill(zeroooo, '0');
+			ret.append(zeroooo);
+			ret.setLength(2 + eLength + sLength);
+			return new String(ret);
+		}
+
+
 	}
 	
 	/**
@@ -937,8 +979,93 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相乘结果,其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatDivision (String operand1, String operand2, int eLength, int sLength) {
-		// TODO YOUR CODE HERE.
-		return null;
+		int e1 = Integer.parseInt(integerTrueValue(operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue(operand2.substring(1, 1 + eLength)));
+		String s1 = "1" + operand1.substring(1 + eLength), s2 = "1" + operand2.substring(1 + eLength);
+		if (e1 == 0) {
+			s1 = s1.replaceAll("1", "0");
+		} else if (e2 == 0) {
+			s2 = s2.replaceAll("1", "0");
+		}
+		StringBuffer ret = new StringBuffer();
+		char[] zeroTemp=new char[eLength+sLength];
+		Arrays.fill(zeroTemp,'0');
+		if(new String(zeroTemp).equals(operand2.substring(1))){
+			char[] temp=new char[eLength];
+			Arrays.fill(temp,'1');
+			char[] temp2=new char[sLength];
+			Arrays.fill(temp2,'0');
+			return "0"+operand1.charAt(0)+new String(temp)+new String(temp2);
+		}
+		char[] zeros=new char[sLength];
+		Arrays.fill(zeros,'0');
+		s1=s1+new String(zeros);
+		s2=new String(zeros)+s2;
+		int biasTo4 = (( 2*sLength + 1) / 4 + 1) * 4 - ( 2*sLength + 1);
+		String result = integerDivision("0" + s1, "0" + s2, 2*sLength + 1 + biasTo4).substring(1,2*sLength+1 + biasTo4);
+
+		ret.append(String.valueOf(Integer.parseInt("" + operand1.charAt(0)) ^ Integer.parseInt("" + operand2.charAt(0))));//符号
+
+
+		int cnt = 0, len = result.length();
+		for (; cnt <len; cnt++) {
+			if (result.charAt(cnt) == '1') {
+				break;
+			}
+		}
+		result=result.substring(cnt);
+//		while (cnt==len){
+//			cnt=0;
+//			e2+=1;
+//			s2=logRightShift(s2,1);
+//			result = integerDivision("0" + s1, "0" + s2, 2*sLength + 1 + biasTo4).substring(1,2*sLength+1 + biasTo4);
+//			for (; cnt < len; cnt++) {
+//				if (result.charAt(cnt) == '1') {
+//					break;
+//				}
+//			}
+//		}
+
+
+		//这部分我直接复制了上题
+		e1 = e1 - e2 + ((1 << (eLength-1)) - 1);
+		if (e1 >= (1 << (eLength)) - 1) {
+			//overflow
+			char[] one = new char[eLength];
+			Arrays.fill(one, '1');
+			ret.append(new String(one));
+			ret.insert(0, '1');
+			char[] zero = new char[sLength];
+			Arrays.fill(zero, '0');
+			ret.append(zero);
+			return new String(ret);
+		} else if (e1 < 0) {
+			//underflow
+			char[] zero = new char[eLength];
+			Arrays.fill(zero, '0');
+			ret.append(zero);
+			ret.insert(0, '0');
+			for (int i = e1 + 1; i < 0 && i <= sLength; i++) {
+				ret.append('0');
+			}
+			ret.append(result);
+			char[] zeroooo = new char[sLength];
+			Arrays.fill(zeroooo, '0');
+			ret.append(zeroooo);
+			ret.setLength(2 + eLength + sLength);
+			return new String(ret);
+		} else {
+			//normal
+			ret.insert(0, '0');
+			ret.append(integerRepresentation(String.valueOf(e1), eLength / 4 * 4 + 4).substring(eLength / 4 * 4 + 4 - eLength));
+			ret.append(result.substring(1));
+			char[] zeroooo = new char[sLength];
+			Arrays.fill(zeroooo, '0');
+			ret.append(zeroooo);
+			ret.setLength(2 + eLength + sLength);
+			return new String(ret);
+		}
+
+
 	}
 
 
