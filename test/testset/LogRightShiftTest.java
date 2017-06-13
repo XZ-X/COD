@@ -12,7 +12,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class LogRightShiftTest {
-
+//
 //	@Rule
 //	public TestLogger tl = new TestLogger();
 

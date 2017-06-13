@@ -176,6 +176,11 @@ public class ALU {
 	 * @return number的IEEE 754表示，长度为length。从左向右，依次为符号、指数（移码表示）、尾数（首位隐藏）
 	 */
 	public String ieee754 (String number, int length) {
+		if(number.equals("0")){
+			return ieee754("0.0",length);
+		}else if(number.equals("-0")){
+			return ieee754("-0.0",length);
+		}
 	    String ret=null;
 	    if(length==32){
 	        ret=floatRepresentation(number,8,23);
@@ -565,6 +570,7 @@ public class ALU {
 		String num2=adder(operand2,"00",'0',length).substring(1);
 		String neg_num1=adder(negation(operand1),"01",'0',length).substring(1);
 
+
 		char[] p=new char[length];
 		char y_1='0';
 		Arrays.fill(p,'0');
@@ -602,10 +608,26 @@ public class ALU {
 		for(int i=0;i<length;i++){
 			tmp+=(py_array[i]^py_array[i+1])&0xf;
 		}
-		if(tmp!=0){
+		char[] oftest=new char[length];
+		Arrays.fill(oftest,'0');
+		String zeroooo=new String(oftest);
+		oftest[0]='1';
+		String overflow=new String(oftest);
+		oftest[0]='0';
+		oftest[oftest.length-1]='1';
+		String one=new String(oftest);
+		if(num1.equals(overflow)&&!(num2.equals(zeroooo)||num2.equals(one))){
 			py='1'+py;
-		}else {
+		}else if(num2.equals(overflow)&&!(num1.equals(zeroooo)||num1.equals(one))){
+			py='1'+py;
+		}else if(num1.equals(overflow)||num2.equals(overflow)){
 			py='0'+py;
+		}else {
+			if (tmp != 0) {
+				py = '1' + py;
+			} else {
+				py = '0' + py;
+			}
 		}
 		return py.charAt(0)+py.substring(length+1);
 	}
@@ -906,7 +928,7 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相乘结果,其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
-		int e1 = Integer.parseInt(integerTrueValue(operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue(operand2.substring(1, 1 + eLength)));
+		int e1 = Integer.parseInt(integerTrueValue("0"+operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue("0"+operand2.substring(1, 1 + eLength)));
 		String s1 = "1" + operand1.substring(1 + eLength), s2 = "1" + operand2.substring(1 + eLength);
 		if (e1 == 0) {
 			s1 = s1.replaceAll("1", "0");
@@ -1057,12 +1079,20 @@ public class ALU {
 			//normal
 			ret.insert(0, '0');
 			ret.append(integerRepresentation(String.valueOf(e1), eLength / 4 * 4 + 4).substring(eLength / 4 * 4 + 4 - eLength));
-			ret.append(result.substring(1));
-			char[] zeroooo = new char[sLength];
-			Arrays.fill(zeroooo, '0');
-			ret.append(zeroooo);
-			ret.setLength(2 + eLength + sLength);
-			return new String(ret);
+			if(result.length()!=0) {
+				ret.append(result.substring(1));
+				char[] zeroooo = new char[sLength];
+				Arrays.fill(zeroooo, '0');
+				ret.append(zeroooo);
+				ret.setLength(2 + eLength + sLength);
+				return new String(ret);
+			}else {
+				ret.setLength(2);
+				char[] zeroooo = new char[eLength+sLength];
+				Arrays.fill(zeroooo, '0');
+				ret.append(zeroooo);
+				return new String(ret);
+			}
 		}
 
 

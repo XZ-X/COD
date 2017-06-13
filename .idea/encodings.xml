@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/src/ALU.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/qALU.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/wALU.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/xALU.java" charset="GBK" />
   </component>
 </project>
