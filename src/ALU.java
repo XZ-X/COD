@@ -664,7 +664,10 @@ public class ALU {
 			} else {
 				RQ = adder(RQ.substring(0, length), num2_neg, '0', length).substring(1) + RQ.substring(length, length * 2);
 			}
-			if (RQ.substring(0, length ).equals(zero) || RQ.charAt(0) == sigRQ) {
+			char[] fixZero=new char[2*length-i];
+			Arrays.fill(fixZero,'0');
+			String fxiedZero=new String(fixZero);
+			if (RQ.substring(0, 2*length-i).equals(fxiedZero) || RQ.charAt(0) == sigRQ) {
 				sigRQ = RQ.charAt(0);
 				RQ = RQ.substring(0, length * 2 - 1) + "1";
 			} else {
