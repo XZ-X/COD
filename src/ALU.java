@@ -1082,7 +1082,7 @@ public class ALU {
 			Arrays.fill(zero, '0');
 			ret.append(zero);
 			ret.insert(0, '0');
-			for (int i = e1 + 1; i < 0 && i <= sLength; i++) {
+			for (int i = e1 ; i < 0 && i <= sLength; i++) {
 				ret.append('0');
 			}
 			ret.append(result);
