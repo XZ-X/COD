@@ -1001,7 +1001,7 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相乘结果,其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatDivision (String operand1, String operand2, int eLength, int sLength) {
-		int e1 = Integer.parseInt(integerTrueValue(operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue(operand2.substring(1, 1 + eLength)));
+		int e1 = Integer.parseInt(integerTrueValue("0"+operand1.substring(1, 1 + eLength))), e2 = Integer.parseInt(integerTrueValue("0"+operand2.substring(1, 1 + eLength)));
 		String s1 = "1" + operand1.substring(1 + eLength), s2 = "1" + operand2.substring(1 + eLength);
 		if (e1 == 0) {
 			s1 = s1.replaceAll("1", "0");
@@ -1018,14 +1018,30 @@ public class ALU {
 			Arrays.fill(temp2,'0');
 			return "0"+operand1.charAt(0)+new String(temp)+new String(temp2);
 		}
-		char[] zeros=new char[sLength];
-		Arrays.fill(zeros,'0');
-		s1=s1+new String(zeros);
-		s2=new String(zeros)+s2;
-		int biasTo4 = (( 2*sLength + 1) / 4 + 1) * 4 - ( 2*sLength + 1);
-		String result = integerDivision("0" + s1, "0" + s2, 2*sLength + 1 + biasTo4).substring(1,2*sLength+1 + biasTo4);
-
+//		char[] zeros=new char[sLength];
+//		Arrays.fill(zeros,'0');
+//		s1=s1+new String(zeros);
+//		int biasTo4 = (( 2*sLength + 1) / 4 + 1) * 4 - ( 2*sLength + 1);
+//		String result = integerDivision("0" + s1, "0" + s2, 2*sLength + 1 + biasTo4).substring(1,2*sLength+1 + biasTo4);
+//		result=result.substring(biasTo4);
 		ret.append(String.valueOf(Integer.parseInt("" + operand1.charAt(0)) ^ Integer.parseInt("" + operand2.charAt(0))));//符号
+//		//判断阶码偏移情况
+//		s1=s1.substring(0,sLength+1);
+//		int biasE=0;
+//		do{
+//			integerDivision("0"+s1,)
+//		}
+//
+		long s1L=Long.parseLong(s1,2),s2L=Long.parseLong(s2,2);
+		double tempQ=(double)s1L/(double)s2L;
+		String Q=floatRepresentation(String.valueOf(tempQ),eLength,sLength);
+		String result=Q.substring(1+eLength);
+		int eR=Integer.parseInt(Q.substring(1,1+eLength),2);
+		if(eR==0){
+			result="0"+result;
+		}else {
+			result="1"+result;
+		}
 
 
 		int cnt = 0, len = result.length();
@@ -1049,7 +1065,7 @@ public class ALU {
 
 
 		//这部分我直接复制了上题
-		e1 = e1 - e2 + ((1 << (eLength-1)) - 1);
+		e1 = e1 - e2 + ((1 << (eLength-1)) - 1)+eR-((1 << (eLength-1)) - 1);
 		if (e1 >= (1 << (eLength)) - 1) {
 			//overflow
 			char[] one = new char[eLength];
@@ -1094,6 +1110,8 @@ public class ALU {
 				return new String(ret);
 			}
 		}
+
+
 
 
 	}
