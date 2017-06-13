@@ -21,8 +21,9 @@ public class ALUTest {
 //        System.out.println(qALU.floatRepresentation("-256", 4, 47));
 //        System.out.println(qALU.floatRepresentation("256", 4, 46));
 //        System.out.println(alu.floatRepresentation("0.0", 5, 4));
-        System.out.println(alu.floatDivision("000010000","001110001",4,4));
-        System.out.println(alu.floatDivision("000010000","010000001",4,4));
+//        System.out.println(alu.floatDivision("000010000","001110001",4,4));
+//        System.out.println(alu.floatDivision("000010000","010000001",4,4));
+        System.out.println(alu.floatSubtraction("000010000","000010001",4,4,10));
     }
     @Test
     public void myTest() throws Exception{

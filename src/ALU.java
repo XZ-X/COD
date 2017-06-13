@@ -869,13 +869,13 @@ public class ALU {
 				Arrays.fill(zero,'0');
 				ret.append(zero);
 				return new String(ret);
-			}else if(e1<0) {
+			}else if(e1<=0) {
 				//underflow
 				char[] zero=new char[eLength];
 				Arrays.fill(zero,'0');
 				ret.append(zero);
 				ret.insert(0,'0');
-				for(int i=e1+1;i<0&&i<=sLength;i++){
+				for(int i=e1;i<0&&i<=sLength;i++){
 					ret.append('0');
 				}
 				ret.append(result.substring(cnt));
@@ -961,13 +961,13 @@ public class ALU {
 			Arrays.fill(zero, '0');
 			ret.append(zero);
 			return new String(ret);
-		} else if (e1 < 0) {
+		} else if (e1 <= 0) {
 			//underflow
 			char[] zero = new char[eLength];
 			Arrays.fill(zero, '0');
 			ret.append(zero);
 			ret.insert(0, '0');
-			for (int i = e1 + 1; i < 0 && i <= sLength; i++) {
+			for (int i = e1 ; i < 0 && i <= sLength; i++) {
 				ret.append('0');
 			}
 			ret.append(result.substring(cnt));
@@ -1123,44 +1123,7 @@ public class ALU {
 
 //	should not be called directly
 
-	private  String getSignificand(String src,int eLength,int sLength){
-		char sign=src.charAt(0);
-		String exponent=src.substring(1,eLength+1);
-		String signif=src.substring(eLength+1);
-		String ret;
-		if(Integer.parseInt(integerTrueValue("0"+exponent))==0){
-			ret="0"+signif;
-		}else {
-			ret="1"+signif;
-		}
-		return ret;
-	}
-	//return exponent:significand
-	private String setSignificand(String significand, int eLength,int sLength){
-		String retE;
-		String retS;
-		char[] sig=significand.toCharArray();
-		int emax=Integer.parseInt(power2(String.valueOf(eLength-1)))-1;
-		int exponent=0;
-		for(int i=0;i<sLength;i++){
-			if(sig[i]=='1'){
-				break;
-			}
-			exponent++;
-		}
 
-		if(exponent==sLength){
-			char[] zero=new char[eLength];
-			Arrays.fill(zero,'0');
-			retE=new String(zero);
-			zero=new char[sLength];
-			Arrays.fill(zero,'0');
-			retS=new String(zero);
-		}else{
-//			if()
-		}
-		return null;//retE+":"+retS;
-	}
 
 
 	private static StringBuffer cut(char[] ret){
