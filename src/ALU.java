@@ -1076,7 +1076,7 @@ public class ALU {
 			Arrays.fill(zero, '0');
 			ret.append(zero);
 			return new String(ret);
-		} else if (e1 < 0) {
+		} else if (e1 <= 0) {
 			//underflow
 			char[] zero = new char[eLength];
 			Arrays.fill(zero, '0');
