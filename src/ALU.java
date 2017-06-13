@@ -832,7 +832,7 @@ public class ALU {
 	 * @return 长度为2+eLength+sLength的字符串表示的相加结果，其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
 	 */
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
-		int e1=Integer.parseInt(integerTrueValue(operand1.substring(1,1+eLength))),e2=Integer.parseInt(integerTrueValue(operand2.substring(1,1+eLength)));
+		int e1=Integer.parseInt(integerTrueValue("0"+operand1.substring(1,1+eLength))),e2=Integer.parseInt(integerTrueValue("0"+operand2.substring(1,1+eLength)));
 		String s1="1"+operand1.substring(1+eLength),s2="1"+operand2.substring(1+eLength);
 		if(e1==0){
 			s1=s1.replaceAll("1","0");
