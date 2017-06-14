@@ -16,8 +16,11 @@ public class ALUTest {
 //        System.out.println(alu.floatRepresentation("0.0", 5, 4));
 //        System.out.println(alu.floatDivision("000010000","001110001",4,4));
 //        System.out.println(alu.floatDivision("000010000","010000001",4,4));
-//        System.out.println(alu.floatSubtraction("000010000","000010001",4,4,10));
-        System.out.println(alu.integerDivision("1001","0001",4));
+//        System.out.println(alu.floatSubtraction("000010000","001100000",4,4,10));
+//        System.out.println(alu.integerDivision("1001","0001",4));
+        System.out.println(alu.signedAddition("0100000","110000000000",16));
+        System.out.println(alu.integerSubtraction("010000","010000000000",16));
+
     }
     @Test
     public void myTest() throws Exception{
