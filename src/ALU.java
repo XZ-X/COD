@@ -643,6 +643,7 @@ public class ALU {
 
 	public String integerDivision (String operand1, String operand2, int length) {
 		//不恢复余数的算法有bug，所以我写个恢复余数的吧。。。。。
+		String num1=adder(operand1,"0",'0',length).substring(1);
 		String RQ=adder(operand1,"0",'0',2*length).substring(1);
 		String num2=adder(operand2,"0",'0',length).substring(1);
 		String num2_neg=negation(num2);
@@ -685,11 +686,11 @@ public class ALU {
 		}
 		char[] of=new char[length];
 		Arrays.fill(of,'0');
-		of[0]=1;
+		of[0]='1';
 		String overflow=new String(of);
 		Arrays.fill(of,'1');
 		String neg_1=new String(of);
-		if((operand1.equals(overflow)&&operand2.equals(neg_1))||(operand2.equals(overflow)&&operand1.equals(neg_1))){
+		if((num1.equals(overflow)&&num2.equals(neg_1))||(num2.equals(overflow)&&num1.equals(neg_1))){
 			RQ="1"+RQ.substring(length)+RQ.substring(0,length);
 		}else{
 			RQ="0"+RQ.substring(length)+RQ.substring(0,length);
